@@ -20,13 +20,25 @@
 %[%%endlabel]:
 %endmacro
 
-%assign READ_BUFFER_SIZE 0x1000
+%imacro pushsection 1+
+	%push section
+	%xdefine %$section __?SECT?__
+	section %1
+%endmacro
+
+%imacro popsection 0
+	%$section
+	%pop section
+%endmacro
+
+%assign READ_BUFFER_SIZE 0x4000
 
 ; Linux x64 syscall IDs
 %assign read         0
 %assign write        1
 %assign mmap         9
 %assign munmap      11
+%assign mremap      25
 %assign exit_group 231
 
 ; errno values

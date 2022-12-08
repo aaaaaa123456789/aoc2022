@@ -40,11 +40,11 @@ _start:
 InvalidModeHandler:
 	endbr64
 	lea rdi, [rel wTextBuffer]
-	lea rsi, [rel .defaultprogname]
+	lea rsi, [rel UsageMessages.defaultprogname]
 	test rdx, rdx
 	cmovz rdx, rsi
-	lea rsi, [rel .usage1]
-	mov ecx, .end_usage1 - .usage1
+	lea rsi, [rel UsageMessages.usage1]
+	mov ecx, UsageMessages.end_usage1 - UsageMessages.usage1
 	rep movsb
 	mov rsi, rdx
 .prognameloop:
@@ -52,8 +52,8 @@ InvalidModeHandler:
 	cmp byte[rdi - 1], 0
 	jnz .prognameloop
 	dec rdi
-	lea rsi, [rel .usage2]
-	mov ecx, .end_usage2 - .usage2
+	lea rsi, [rel UsageMessages.usage2]
+	mov ecx, UsageMessages.end_usage2 - UsageMessages.usage2
 	rep movsb
 	mov eax, ": "
 	lea rdx, [rel ModeHandlers]
@@ -73,20 +73,30 @@ InvalidModeHandler:
 	mov eax, `\n`
 	stosw
 	lea rsi, [rel wTextBuffer]
+ErrorExit:
+	; in: rsi = error message
 	mov edi, 2
 	call OutputMessage
-	mov edi, 120
+	mov edi, 1
 	mov eax, exit_group
 	syscall
 
-.defaultprogname: db "<program name>", 0
-.usage1: withend db "usage: "
-.usage2: withend db ` <mode> <args...>\n\nAvailable modes`
+UsageMessages:
+	.defaultprogname: db "<program name>", 0
+	.usage1: withend db "usage: "
+	.usage2: withend db ` <mode> <args...>\n\nAvailable modes`
 
-section .rodata, align=16
+InvalidInputError:
+	lea rsi, [rel .message]
+	jmp ErrorExit
+
+.message: db `error: invalid input\n`, 0
+
+section .rodata align=16
 
 ModeHandlers:
 	; all called with rdi = argument count, rsi = argument array (after skipping), rdx = program name (or null)
 	; returning exit status in edi
+	dq "1a",       Prob1a
 	dq "testcat",  TestCat
 	dq 0,          InvalidModeHandler
