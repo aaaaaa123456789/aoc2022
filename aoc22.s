@@ -7,3 +7,4 @@
 
 %include "src/day1.s"
 %include "src/day2.s"
+%include "src/day3.s"
