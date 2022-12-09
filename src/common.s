@@ -178,8 +178,10 @@ ParseNumber:
 	ret
 
 	pushsection .rodata align=16
-.mask: db 16 dup -1
-.zerodigits: db 16 dup "0" ; also the second half of the mask
+.mask:
+	times 16 db -1
+.zerodigits:
+	times 16 db "0" ; also the second half of the mask
 .digitvalues:
 	dd 1, 10, 100, 1000
 	dd 10000, 100000, 10000000, 100000000

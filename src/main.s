@@ -33,6 +33,7 @@ _start:
 	jnz .modeloop
 .foundmode:
 	mov rsi, rsp
+	and rsp, -16 ; align the stack
 	call [rcx + 8]
 	mov eax, exit_group
 	syscall
