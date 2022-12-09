@@ -68,8 +68,7 @@ Prob1b:
 	test edx, edx
 	jz .outerloop
 	add rsp, 16
-	vphaddd xmm0, xmm0, xmm0
-	vphaddd xmm0, xmm0, xmm0
+	times 2 vphaddd xmm0, xmm0, xmm0
 	vmovd eax, xmm0
 	call PrintNumber
 	xor edi, edi

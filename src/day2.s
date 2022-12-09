@@ -58,8 +58,7 @@ TallyRPSThrows:
 	vpaddd xmm0, xmm0, xmm1
 	vpmulld xmm2, xmm2, [rsi + 32]
 	vpaddd xmm0, xmm0, xmm2
-	vphaddd xmm0, xmm0, xmm0
-	vphaddd xmm0, xmm0, xmm0
+	times 2 vphaddd xmm0, xmm0, xmm0
 	vmovd eax, xmm0
 	call PrintNumber
 	xor edi, edi
