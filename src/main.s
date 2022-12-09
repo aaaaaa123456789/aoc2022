@@ -33,7 +33,10 @@ _start:
 	jnz .modeloop
 .foundmode:
 	mov rsi, rsp
-	and rsp, -16 ; align the stack
+	; align the stack
+	sub rsp, 8
+	test rsp, 8
+	cmovz rsp, rsi
 	call [rcx + 8]
 	mov eax, exit_group
 	syscall
@@ -99,5 +102,6 @@ ModeHandlers:
 	; all called with rdi = argument count, rsi = argument array (after skipping), rdx = program name (or null)
 	; returning exit status in edi
 	dq "1a",       Prob1a
+	dq "1b",       Prob1b
 	dq "testcat",  TestCat
 	dq 0,          InvalidModeHandler
