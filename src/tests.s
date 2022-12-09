@@ -1,4 +1,4 @@
-section .text
+	section .text
 
 TestCat:
 	; simple test cat program, to make sure input and output work correctly

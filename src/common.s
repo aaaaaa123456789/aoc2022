@@ -1,16 +1,16 @@
-section .bss align=16
+	section .bss align=16
 
 wInputBuffer: resb READ_BUFFER_SIZE
 wTextBuffer: resb 0x800
 
-section .data align=16
+	section .data align=16
 
 wInputPosition: dw READ_BUFFER_SIZE
 wInputEOF: dw READ_BUFFER_SIZE
 
 	align 16, db 0
 
-section .text
+	section .text
 
 ReadInputLine:
 	; input: none

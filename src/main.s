@@ -1,4 +1,4 @@
-section .text
+	section .text
 
 	global _start:function
 _start:
@@ -96,7 +96,7 @@ InvalidInputError:
 
 .message: db `error: invalid input\n`, 0
 
-section .rodata align=16
+	section .rodata align=16
 
 ModeHandlers:
 	; all called with rdi = argument count, rsi = argument array (after skipping), rdx = program name (or null)
