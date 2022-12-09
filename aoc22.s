@@ -6,3 +6,4 @@
 %include "src/tests.s"
 
 %include "src/day1.s"
+%include "src/day2.s"

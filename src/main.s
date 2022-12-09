@@ -103,5 +103,7 @@ ModeHandlers:
 	; returning exit status in edi
 	dq "1a",       Prob1a
 	dq "1b",       Prob1b
+	dq "2a",       Prob2a
+	dq "2b",       Prob2b
 	dq "testcat",  TestCat
 	dq 0,          InvalidModeHandler
