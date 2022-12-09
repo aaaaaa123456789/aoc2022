@@ -28,6 +28,7 @@
 
 %imacro popsection 0
 	%$section
+	%xdefine __?SECT?__ %$section
 	%pop section
 %endmacro
 
