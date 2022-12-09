@@ -5,6 +5,7 @@ even libc).
 Why? For fun, and because the early days are extremely easy and this makes them challenging. How often does someone
 get to write a routine to read a line of input, or to parse a number?
 
-This codebase builds using NASM 2.15.03, and probably (hopefully) any more recent 2.x version.
+This codebase builds using NASM 2.15.03, and probably (hopefully) any more recent 2.x version. The codebase is built
+for x64 Linux; by its nature, all system calls are hardcoded, and thus it won't work in any other OS.
 
 [aoc2022]: https://adventofcode.com/2022
