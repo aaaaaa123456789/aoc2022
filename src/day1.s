@@ -27,11 +27,7 @@ Prob1a:
 	pop rsi
 	cmp rax, rsi
 	cmovb rax, rsi
-	lea rdi, [rel wTextBuffer]
-	call NumberToString
-	mov word[rdi], `\n`
-	lea rsi, [rel wTextBuffer]
-	call PrintMessage
+	call PrintNumber
 	xor edi, edi
 	ret
 
@@ -75,11 +71,7 @@ Prob1b:
 	vphaddd xmm0, xmm0, xmm0
 	vphaddd xmm0, xmm0, xmm0
 	vmovd eax, xmm0
-	lea rdi, [rel wTextBuffer]
-	call NumberToString
-	mov word[rdi], `\n`
-	lea rsi, [rel wTextBuffer]
-	call PrintMessage
+	call PrintNumber
 	xor edi, edi
 	ret
 

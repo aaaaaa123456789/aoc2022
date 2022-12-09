@@ -94,6 +94,12 @@ ReturnCarryOneOutput:
 	stc
 	ret
 
+PrintNumber:
+	; in: rax: number
+	lea rdi, [rel wTextBuffer]
+	call NumberToString
+	mov word[rdi], `\n`
+	lea rsi, [rel wTextBuffer]
 PrintMessage:
 	mov edi, 1
 OutputMessage:
