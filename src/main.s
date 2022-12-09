@@ -97,7 +97,6 @@ InvalidInputError:
 .message: db `error: invalid input\n`, 0
 
 	section .rodata align=16
-
 ModeHandlers:
 	; all called with rdi = argument count, rsi = argument array (after skipping), rdx = program name (or null)
 	; returning exit status in edi
@@ -106,5 +105,6 @@ ModeHandlers:
 	dq "2a",       Prob2a
 	dq "2b",       Prob2b
 	dq "3a",       Prob3a
+	dq "3b",       Prob3b
 	dq "testcat",  TestCat
 	dq 0,          InvalidModeHandler

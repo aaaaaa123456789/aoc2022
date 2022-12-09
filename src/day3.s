@@ -36,3 +36,40 @@ Prob3a:
 	call PrintNumber
 	xor edi, edi
 	ret
+
+Prob3b:
+	endbr64
+	push 0
+.loop:
+	call .readnext
+	jc Prob3a.done
+	push rdx
+	call .readnext
+	jc InvalidInputError
+	and [rsp], rdx
+	call .readnext
+	jc InvalidInputError
+	pop rax
+	and rax, rdx
+	bsr rax, rax
+	add [rsp], rax
+	jmp .loop
+
+.readnext:
+	call ReadInputLine
+	jc .return
+	test rdi, rdi
+	jz .return
+	mov edx, 1
+.itemloop:
+	lodsb
+	movzx eax, al
+	lea rcx, [rax - ("A" - 27)]
+	sub eax, "a" - 1
+	cmovc eax, ecx
+	bts rdx, rax
+	dec rdi
+	jnz .itemloop
+	clc
+.return:
+	ret
