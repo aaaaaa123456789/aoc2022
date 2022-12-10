@@ -106,5 +106,7 @@ ModeHandlers:
 	dq "2b",       Prob2b
 	dq "3a",       Prob3a
 	dq "3b",       Prob3b
+	dq "4a",       Prob4a
+	dq "4b",       Prob4b
 	dq "testcat",  TestCat
 	dq 0,          InvalidModeHandler
