@@ -2,6 +2,32 @@
 
 	global _start:function
 _start:
+	; check that stdin, stdout and stderr are open - die immediately (exit status 122) if they aren't
+	xor edi, edi
+	mov esi, F_GETFD
+	mov eax, fcntl
+	syscall
+	cmp eax, -EBADF
+	jz .badfd
+	mov edi, 1
+	mov esi, F_GETFD
+	mov eax, fcntl
+	syscall
+	cmp eax, -EBADF
+	jz .badfd
+	mov edi, 2
+	mov esi, F_GETFD
+	mov eax, fcntl
+	syscall
+	cmp eax, -EBADF
+	jnz .goodfd
+.badfd:
+	mov edi, 122
+	mov eax, exit_group
+	syscall
+.goodfd:
+
+	; handle command-line arguments
 	pop rdi
 	sub rdi, 2
 	pop rdx

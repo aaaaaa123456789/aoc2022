@@ -40,7 +40,12 @@
 %assign mmap         9
 %assign munmap      11
 %assign mremap      25
+%assign fcntl       72
 %assign exit_group 231
 
 ; errno values
 %assign EINTR 4
+%assign EBADF 9
+
+; other kernel API constants
+%assign F_GETFD 1
