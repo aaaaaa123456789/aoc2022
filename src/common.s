@@ -1,14 +1,15 @@
 	section .bss align=16
-
+	assert !(READ_BUFFER_SIZE % 16), "unaligned read buffer size"
 wInputBuffer: resb READ_BUFFER_SIZE
 wTextBuffer: resb 0x800
 
 	section .data align=16
-
+wOutputFD: dd 1
+wInputFD: dd 0
 wInputPosition: dw READ_BUFFER_SIZE
 wInputEOF: dw READ_BUFFER_SIZE
 
-	align 16, db 0
+	dd 0 ; padding
 
 	section .text
 
@@ -51,7 +52,7 @@ ReadInputLine:
 .readloop:
 	push rsi
 	push rdx
-	xor edi, edi
+	mov edi, [rel wInputFD]
 	assert read == 0
 	xor eax, eax
 	syscall
@@ -80,12 +81,16 @@ ReadInputLine:
 	mov [rel wInputEOF], si
 	jmp ReadInputLine
 
-.errormessage: db `standard input error\n`, 0
+.errormessage: db `error: input failed\n`, 0
 
 .error:
-	mov edi, 2
+	mov edi, [rel wOutputFD]
+	push rdi
+	mov dword[rel wOutputFD], 2
 	lea rsi, [rel .errormessage]
-	call OutputMessage
+	call PrintMessage
+	pop rdi
+	mov [rel wOutputFD], edi
 	mov word[rel wInputEOF], 0
 .atEOF:
 	xor esi, esi
@@ -101,10 +106,7 @@ PrintNumber:
 	mov word[rdi], `\n`
 	lea rsi, [rel wTextBuffer]
 PrintMessage:
-	mov edi, 1
-OutputMessage:
-	; in: edi: file descriptor, rsi: string
-	push rdi
+	; in: rsi: string
 	xor eax, eax
 	mov rcx, -1
 	mov rdi, rsi
@@ -112,7 +114,7 @@ OutputMessage:
 	sub rdi, rsi
 	lea rdx, [rdi - 1]
 .writeloop:
-	mov edi, [rsp]
+	mov edi, [rel wOutputFD]
 	push rsi
 	push rdx
 	mov eax, write
@@ -127,7 +129,6 @@ OutputMessage:
 	sub rdx, rax
 	jnz .writeloop
 .done:
-	add rsp, 8
 	ret
 
 ParseNumber:

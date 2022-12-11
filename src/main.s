@@ -79,8 +79,8 @@ InvalidModeHandler:
 	lea rsi, [rel wTextBuffer]
 ErrorExit:
 	; in: rsi = error message
-	mov edi, 2
-	call OutputMessage
+	mov dword[rel wOutputFD], 2
+	call PrintMessage
 	mov edi, 1
 	mov eax, exit_group
 	syscall
