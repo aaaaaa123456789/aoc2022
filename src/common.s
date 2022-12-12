@@ -60,7 +60,7 @@ ReadInputLine:
 	pop rsi
 	cmp rax, -EINTR
 	jz .readloop
-	cmp eax, 0
+	test rax, rax
 	jz .EOF
 	jl .error
 	add rsi, rax
@@ -123,7 +123,7 @@ PrintMessage:
 	pop rsi
 	cmp rax, -EINTR
 	jz .writeloop
-	cmp rax, 0
+	test rax, rax
 	jle .done
 	add rsi, rax
 	sub rdx, rax
