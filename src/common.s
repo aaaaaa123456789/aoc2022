@@ -207,7 +207,7 @@ NumberToString:
 	vmovdqa xmm0, [rel SwappedIndexes]
 .loop:
 	xor edx, edx
-	div ecx
+	div rcx
 	add edx, "0"
 	vpslldq xmm0, xmm0, 1
 	vpinsrb xmm0, xmm0, edx, 0

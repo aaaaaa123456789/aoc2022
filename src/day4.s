@@ -70,7 +70,7 @@ GetNextSectionAssignmentPair:
 	mov [rsp + 12], edi
 	cmp byte[rsi], 0
 	jnz InvalidInputError
-	movdqu xmm0, [rsp]
+	vmovdqu xmm0, [rsp]
 	add rsp, 16
 .done:
 	ret
