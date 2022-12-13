@@ -2,6 +2,7 @@
 	assert !(READ_BUFFER_SIZE % 16), "unaligned read buffer size"
 wInputBuffer: resb READ_BUFFER_SIZE
 wTextBuffer: resb 0x800
+wModeData: withend resq 0x200
 
 	section .data align=16
 wOutputFD: dd 1
@@ -191,7 +192,7 @@ ParseNumber:
 	times 16 db "0" ; also the second half of the mask
 .digitvalues:
 	dd 1, 10, 100, 1000
-	dd 10000, 100000, 10000000, 100000000
+	dd 10000, 100000, 1000000, 10000000
 	popsection
 
 NumberToString:
@@ -218,6 +219,15 @@ NumberToString:
 	cmp ecx, edx
 	cmovnc ecx, edx
 	add rdi, rcx
+	ret
+
+SkipSpaces:
+	; rsi: pointer to string; updated to skip spaces
+	mov al, " "
+	mov rcx, -1
+	mov rdi, rsi
+	repz scasb
+	lea rsi, [rdi - 1]
 	ret
 
 	section .rodata align=16

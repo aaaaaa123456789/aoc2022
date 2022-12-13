@@ -2,6 +2,7 @@
 
 %include "src/main.s"
 %include "src/common.s"
+%include "src/alloc.s"
 
 %include "src/tests.s"
 

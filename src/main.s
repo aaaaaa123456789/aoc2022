@@ -135,4 +135,5 @@ ModeHandlers:
 	dq "4a",       Prob4a
 	dq "4b",       Prob4b
 	dq "testcat",  TestCat
+	dq "testmap",  TestMap
 	dq 0,          InvalidModeHandler
