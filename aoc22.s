@@ -10,3 +10,4 @@
 %include "src/day2.s"
 %include "src/day3.s"
 %include "src/day4.s"
+%include "src/day5.s"
