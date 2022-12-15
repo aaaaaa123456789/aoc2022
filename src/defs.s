@@ -38,6 +38,8 @@
 ; Linux x64 syscall IDs
 %assign read         0
 %assign write        1
+%assign open         2
+%assign close        3
 %assign mmap         9
 %assign munmap      11
 %assign mremap      25
@@ -53,5 +55,6 @@
 %assign MAP_PRIVATE        2
 %assign MAP_ANONYMOUS   0x20
 %assign MREMAP_MAYMOVE     1
+%assign O_RDONLY           0
 %assign PROT_READ          1
 %assign PROT_WRITE         2

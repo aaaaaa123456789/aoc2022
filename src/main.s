@@ -126,6 +126,7 @@ InvalidInputError:
 ModeHandlers:
 	; all called with rdi = argument count, rsi = argument array (after skipping), rdx = program name (or null)
 	; returning exit status in edi
+	dq "script",   ScriptMode
 	dq "1a",       Prob1a
 	dq "1b",       Prob1b
 	dq "2a",       Prob2a
