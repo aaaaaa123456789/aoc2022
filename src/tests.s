@@ -5,17 +5,12 @@ TestCat:
 	endbr64
 .loop:
 	call ReadInputLine
-	jc .done
+	jc ExitSuccess
 	call PrintMessage
 	; inefficient, but this is just a test
-	lea rsi, [rel .newline]
+	lea rsi, [rel Newline]
 	call PrintMessage
 	jmp .loop
-.done:
-	xor edi, edi
-	ret
-
-.newline: db `\n`, 0
 
 TestMap:
 	; tests memory mappings by reading commands from standard input
@@ -27,7 +22,7 @@ TestMap:
 	rep stosq
 .loop:
 	call ReadInputLine
-	jc TestCat.done
+	jc ExitSuccess
 	call SkipSpaces
 	cmp byte[rdi - 1], 0
 	jz .loop

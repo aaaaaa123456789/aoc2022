@@ -1,4 +1,7 @@
-struc allocation, -0x10
+struc allocation, -0x20
+	.allocation:
+	.previous: resq 1
+	.next:     resq 1
 	.mapping:
 	.size:     resq 1
 	.base:     resq 1
@@ -72,3 +75,135 @@ MapMemory:
 	syscall
 .message:
 	db `error: failed to allocate memory\n`, 0
+
+AllocateMemory:
+	; in: rdi = current allocation (null to allocate new), rsi = size (zero to free)
+	; out: rdi = allocation, rsi = actual size
+	test rdi, rdi
+	jnz .update
+	add rsi, 15
+	and rsi, -16
+	jz .done
+.allocate:
+	lea rax, [rsi - allocation.allocation]
+	cmp rax, MAPPING_THRESHOLD
+	jnc MapMemory
+	sub [rel wAllocationRemainingSpace], eax
+	jc .newmap
+	mov rbx, [rel wLastAllocation]
+	mov rdx, [rbx - allocation.allocation + allocation.size]
+	lea rdi, [rdx + rbx]
+	mov [rbx - allocation.allocation + allocation.next], rdi
+	mov [rel wLastAllocation], rdi
+	sub rdi, allocation.allocation
+	mov [rdi + allocation.previous], rbx
+	mov qword[rdi + allocation.next], 0
+	mov [rdi + allocation.size], rax
+	mov rax, [rel wCurrentAllocationMapping]
+	mov [rdi + allocation.base], rax
+.done:
+	ret
+
+.newmap:
+	push rax
+	mov esi, ALLOCATION_BUFFER_SIZE + allocation.mapping
+	call MapMemory
+	mov [rel wCurrentAllocationMapping], rdi
+	mov [rel wLastAllocation], rdi
+	pop rax
+	sub esi, eax
+	mov [rel wAllocationRemainingSpace], esi
+	lea rsi, [rdi + allocation.allocation]
+	mov [rdi - allocation.allocation + allocation.base], rdi
+	sub rdi, allocation.allocation
+	mov [rdi + allocation.size], rax
+	lea rsi, [rax + allocation.allocation]
+	xor eax, eax
+	mov [rdi + allocation.previous], rax
+	mov [rdi + allocation.next], rax
+	ret
+
+.update:
+	cmp qword[rdi + allocation.base], 0
+	jz MapMemory
+	test rsi, rsi
+	jz .free
+	add rsi, 15 - allocation.allocation
+	and rsi, -16
+	mov rax, [rdi + allocation.size]
+	lea rdx, [rdi + allocation.allocation]
+	cmp rsi, rax
+	jz .done
+	jc .shrink
+	cmp rsi, MAPPING_THRESHOLD
+	jnc .move
+	cmp rdx, [rel wLastAllocation]
+	jnz .move
+	mov ecx, esi
+	sub ecx, eax
+	sub ecx, [rel wAllocationRemainingSpace]
+	ja .move
+	mov [rel wAllocationRemainingSpace], ecx
+	jmp .updated
+
+.shrink:
+	; only shrink the last allocation; everything else can stay as is
+	xchg esi, eax
+	cmp rdx, [rel wLastAllocation]
+	jnz .updated
+	sub esi, eax
+	add [rel wAllocationRemainingSpace], esi
+	mov esi, eax
+.updated:
+	mov [rdi + allocation.size], rsi
+	add esi, allocation.allocation
+	ret
+
+.move:
+	add eax, allocation.allocation
+	push rax
+	push rdi
+	add rsi, allocation.allocation
+	xor edi, edi
+	call .allocate
+	mov ecx, [rsp + 8]
+	shr ecx, 3
+	mov [rsp + 8], rsi
+	mov rbx, rdi
+	mov rsi, [rsp]
+	rep movsq
+	pop rdi
+	push rbx
+	xor esi, esi
+	call .free
+	pop rdi
+	pop rsi
+	ret
+
+.free:
+	mov rax, [rdi + allocation.next]
+	mov rdx, [rdi + allocation.previous]
+	add rdi, allocation.allocation
+	cmp rdi, [rel wLastAllocation]
+	jnz .lastOK
+	mov rcx, [rdi - allocation.allocation + allocation.size]
+	add [rel wAllocationRemainingSpace], ecx
+	mov [rel wLastAllocation], rdx
+	test rdx, rdx
+	jnz .lastOK
+	mov [rel wCurrentAllocationMapping], rdx
+	mov [rel wAllocationRemainingSpace], edx
+.lastOK:
+	test rax, rax
+	jz .nonext
+	mov [rax - allocation.allocation + allocation.previous], rdx
+.nonext:
+	test rdx, rdx
+	jz .noprev
+	mov [rdx - allocation.allocation + allocation.next], rax
+.noprev:
+	or rdx, rax
+	mov rdi, [rdi - allocation.allocation + allocation.base]
+	jz MapMemory
+	xor edi, edi
+	ret

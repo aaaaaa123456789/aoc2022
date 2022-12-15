@@ -32,8 +32,10 @@
 	%pop section
 %endmacro
 
-%assign READ_BUFFER_SIZE  0x4000
-%assign MAPPING_ALIGNMENT 0x1000
+%assign READ_BUFFER_SIZE         0x4000
+%assign MAPPING_ALIGNMENT        0x1000
+%assign MAPPING_THRESHOLD        0x1800
+%assign ALLOCATION_BUFFER_SIZE 0x100000
 
 ; Linux x64 syscall IDs
 %assign read         0

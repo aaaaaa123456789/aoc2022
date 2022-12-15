@@ -120,7 +120,9 @@ InvalidInputError:
 	lea rsi, [rel .message]
 	jmp ErrorExit
 
-.message: db `error: invalid input\n`, 0
+.message: db "error: invalid input" ; followed by Newline
+
+Newline: db `\n`, 0
 
 	section .rodata align=16
 ModeHandlers:
@@ -141,4 +143,5 @@ ModeHandlers:
 	dq "6b",       Prob6b
 	dq "testcat",  TestCat
 	dq "testmap",  TestMap
+	dq "testmem",  TestMemory
 	dq 0,          InvalidModeHandler

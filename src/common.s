@@ -1,17 +1,3 @@
-	section .bss align=16
-	assert !(READ_BUFFER_SIZE % 16), "unaligned read buffer size"
-wInputBuffer: resb READ_BUFFER_SIZE
-wTextBuffer: resb 0x800
-wModeData: withend resq 0x200
-
-	section .data align=16
-wOutputFD: dd 1
-wInputFD: dd 0
-wInputPosition: dw READ_BUFFER_SIZE
-wInputEOF: dw READ_BUFFER_SIZE
-
-	dd 0 ; padding
-
 	section .text
 
 ReadInputLine:
@@ -95,6 +81,7 @@ ReadInputLine:
 	mov word[rel wInputEOF], 0
 .atEOF:
 	xor esi, esi
+ExitSuccess: ; the carry flag is irrelevant
 ReturnCarryOneOutput:
 	xor edi, edi
 	stc
