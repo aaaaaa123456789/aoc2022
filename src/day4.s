@@ -26,7 +26,7 @@ Prob4b:
 	push 0
 .loop:
 	call GetNextSectionAssignmentPair
-	jc .done
+	jc Prob4a.done
 	vpshufd xmm1, xmm0, 0xd7
 	vpcmpgtd xmm0, xmm0, xmm1
 	vpmovmskb eax, xmm0
@@ -35,11 +35,6 @@ Prob4b:
 	movzx eax, al
 	add [rsp], rax
 	jmp .loop
-.done:
-	pop rax
-	call PrintNumber
-	xor edi, edi
-	ret
 
 GetNextSectionAssignmentPair:
 	call ReadInputLine
