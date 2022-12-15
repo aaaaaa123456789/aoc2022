@@ -72,8 +72,9 @@ PrintStackTops:
 	mov word[rdi], `\n`
 	lea rsi, [rel wTextBuffer]
 	call PrintMessage
-	xor edi, edi
-	ret
+	mov rdi, [rel wStackLayoutStacks]
+	xor esi, esi
+	jmp MapMemory ; will return with edi = 0
 
 ReadStartingStackLayout:
 	mov byte[rel wStackLayoutStackCount], 0
