@@ -18,6 +18,7 @@ wCurrentEntryCount: resq 1
 wCandidateDirectorySize:
 wCurrentEntryBuffer: resq 1
 wCurrentEntryBufferSize: resq 1
+	alignb 16 ; padding
 
 	assert $ <= wModeData.end
 
