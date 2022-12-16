@@ -12,59 +12,7 @@ wTreeGridSize: resq 1 ; width * height
 Prob8a:
 	endbr64
 	call ReadTreeGrid
-	call ComputeTreeVisibility
-	mov rsi, [rel wTreeVisibilityGrid]
-	mov rcx, [rel wTreeGridSize]
-	xor edx, edx
-.loop:
-	lodsb
-	test al, al
-	setnz al
-	movzx eax, al
-	add rax, rdx
-	mov rdx, rax
-	dec rcx
-	jnz .loop
-	call PrintNumber
-	mov rdi, [rel wTreeVisibilityGrid]
-	xor esi, esi
-	call MapMemory
-	mov rdi, [rel wTreeGrid]
-	jmp MapMemory
 
-ReadTreeGrid:
-	call ReadInputLine
-	jc InvalidInputError
-	test rdi, rdi
-	jz ReadTreeGrid
-	mov [rel wTreeGridWidth], edi
-	xor eax, eax
-	mov [rel wTreeGrid], rax
-	mov [rel wTreeGridHeight], eax
-	mov [rel wTreeGridSize], rax
-.loop:
-	push rsi
-	mov rdi, [rel wTreeGrid]
-	mov esi, [rel wTreeGridWidth]
-	add rsi, [rel wTreeGridSize]
-	call MapMemory
-	mov [rel wTreeGrid], rdi
-	add rdi, [rel wTreeGridSize]
-	pop rsi
-	mov ecx, [rel wTreeGridWidth]
-	add [rel wTreeGridSize], rcx
-	rep movsb
-	inc dword[rel wTreeGridHeight]
-.readagain:
-	call ReadInputLine
-	jc Return
-	test rdi, rdi
-	jz .readagain
-	cmp edi, [rel wTreeGridWidth]
-	jz .loop
-	jmp InvalidInputError
-
-ComputeTreeVisibility:
 	mov rsi, [rel wTreeGridSize]
 	xor edi, edi
 	call MapMemory
@@ -143,11 +91,12 @@ ComputeTreeVisibility:
 	jnz .bottomloop
 
 	mov edx, r12d
+	mov rbp, r15
 .toploop:
-	mov rdi, r15
+	mov rdi, rbp
 	mov rsi, r14
 	mov ecx, r13d
-	inc r15
+	inc rbp
 	inc r14
 	xor eax, eax
 .topinner:
@@ -163,4 +112,52 @@ ComputeTreeVisibility:
 	dec edx
 	jnz .toploop
 
-	ret
+	mov rsi, r15
+	xor edx, edx
+.countloop:
+	lodsb
+	test al, al
+	setnz al
+	movzx eax, al
+	add rax, rdx
+	mov rdx, rax
+	dec r10
+	jnz .countloop
+	call PrintNumber
+	mov rdi, [rel wTreeVisibilityGrid]
+	xor esi, esi
+	call MapMemory
+	mov rdi, [rel wTreeGrid]
+	jmp MapMemory
+
+ReadTreeGrid:
+	call ReadInputLine
+	jc InvalidInputError
+	test rdi, rdi
+	jz ReadTreeGrid
+	mov [rel wTreeGridWidth], edi
+	xor eax, eax
+	mov [rel wTreeGrid], rax
+	mov [rel wTreeGridHeight], eax
+	mov [rel wTreeGridSize], rax
+.loop:
+	push rsi
+	mov rdi, [rel wTreeGrid]
+	mov esi, [rel wTreeGridWidth]
+	add rsi, [rel wTreeGridSize]
+	call MapMemory
+	mov [rel wTreeGrid], rdi
+	add rdi, [rel wTreeGridSize]
+	pop rsi
+	mov ecx, [rel wTreeGridWidth]
+	add [rel wTreeGridSize], rcx
+	rep movsb
+	inc dword[rel wTreeGridHeight]
+.readagain:
+	call ReadInputLine
+	jc Return
+	test rdi, rdi
+	jz .readagain
+	cmp edi, [rel wTreeGridWidth]
+	jz .loop
+	jmp InvalidInputError
