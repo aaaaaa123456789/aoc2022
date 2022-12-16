@@ -12,3 +12,4 @@
 6b input/6.txt
 7a input/7.txt
 7b input/7.txt
+8a input/8.txt

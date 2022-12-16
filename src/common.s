@@ -210,6 +210,7 @@ NumberToString:
 
 DummyCallback:
 	endbr64
+Return:
 	ret
 
 SkipSpaces:
