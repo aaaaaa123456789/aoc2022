@@ -208,6 +208,10 @@ NumberToString:
 	add rdi, rcx
 	ret
 
+DummyCallback:
+	endbr64
+	ret
+
 SkipSpaces:
 	; rsi: pointer to string; updated to skip spaces
 	mov al, " "
@@ -215,6 +219,22 @@ SkipSpaces:
 	mov rdi, rsi
 	repz scasb
 	lea rsi, [rdi - 1]
+	ret
+
+CompareStrings:
+	; rsi, rdi: strings to compare; returns in flags; preserves all integer registers except rax and rcx
+	mov rax, -16
+.loop:
+	add rax, 16
+	vmovdqu xmm0, [rdi + rax]
+	vpcmpistri xmm0, [rsi + rax], 0x18
+	jc .found
+	jnz .loop
+	xor ecx, ecx ; if all bytes were equal, just compare one of them
+.found:
+	add rcx, rax
+	mov al, [rsi + rcx]
+	cmp al, [rdi + rcx]
 	ret
 
 	section .rodata align=16

@@ -10,3 +10,5 @@
 5b input/5.txt
 6a input/6.txt
 6b input/6.txt
+7a input/7.txt
+7b input/7.txt
