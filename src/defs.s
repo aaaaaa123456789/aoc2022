@@ -60,3 +60,6 @@
 %assign O_RDONLY           0
 %assign PROT_READ          1
 %assign PROT_WRITE         2
+
+	section .text align=4096
+	section .bss align=4096

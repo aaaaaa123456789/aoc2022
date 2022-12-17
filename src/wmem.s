@@ -1,4 +1,4 @@
-	section .bss align=16
+	section .bss
 	assert !(READ_BUFFER_SIZE % 16), "unaligned read buffer size"
 wInputBuffer: resb READ_BUFFER_SIZE
 wTextBuffer: resb 0x800

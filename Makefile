@@ -5,7 +5,7 @@ SRCFILES := $(wildcard src/*.s)
 
 all: aoc22.s $(SRCFILES)
 	$(NASM) -f elf64 -o aoc22.o $<
-	$(LD) -s -x aoc22.o -o aoc22
+	$(LD) -s -x -n aoc22.o -o aoc22
 	rm -f aoc22.o
 
 debug: aoc22.s $(SRCFILES)
