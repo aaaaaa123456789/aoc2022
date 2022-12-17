@@ -251,7 +251,7 @@ ValidateDigits:
 .loop:
 	vpcmpestri xmm0, [rsi + rdx], 0x74
 	jc .done
-	add rdx, 16
+	sub rdx, -16 ; for inverted carry behavior
 	jc .loop
 .done:
 	ret
