@@ -2,7 +2,7 @@
 	assert !(READ_BUFFER_SIZE % 16), "unaligned read buffer size"
 wInputBuffer: resb READ_BUFFER_SIZE
 wTextBuffer: resb 0x800
-wModeData: withend resq 0x200
+wModeData: withend resq 500
 
 wOutputFD: resd 1 ; initialize to 1
 wInputFD: resd 1
