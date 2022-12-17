@@ -27,6 +27,11 @@ _start:
 	syscall
 .goodfd:
 
+	; initialize non-zero variables
+	mov dword[rel wOutputFD], 1
+	assert wInputEOF == wInputPosition + 2
+	mov dword[rel wInputPosition], READ_BUFFER_SIZE * 0x10001
+
 	; handle command-line arguments
 	pop rdi
 	sub rdi, 2

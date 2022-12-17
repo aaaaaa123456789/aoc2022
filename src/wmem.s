@@ -4,13 +4,12 @@ wInputBuffer: resb READ_BUFFER_SIZE
 wTextBuffer: resb 0x800
 wModeData: withend resq 0x200
 
-	section .data align=16
-wOutputFD: dd 1
-wInputFD: dd 0
-wInputPosition: dw READ_BUFFER_SIZE
-wInputEOF: dw READ_BUFFER_SIZE
+wOutputFD: resd 1 ; initialize to 1
+wInputFD: resd 1
+wInputPosition: resw 1 ; initialize to READ_BUFFER_SIZE
+wInputEOF: resw 1 ; initialize to READ_BUFFER_SIZE
 
-wAllocationRemainingSpace: dd 0
+wAllocationRemainingSpace: resd 1
 
-wCurrentAllocationMapping: dq 0
-wLastAllocation: dq 0
+wCurrentAllocationMapping: resq 1
+wLastAllocation: resq 1
