@@ -13,8 +13,7 @@ Prob6a:
 	vpshufb xmm1, xmm0, [rel .interleaved]
 	vpshufb xmm0, xmm0, [rel .repeated]
 	vpcmpeqb xmm0, xmm0, xmm1
-	vpmovmskb edx, xmm0
-	test edx, edx
+	vptest xmm0, xmm0
 	jnz .loop
 	call PrintNumber
 	xor edi, edi
@@ -47,8 +46,7 @@ Prob6b:
 		vpor xmm3, xmm3, xmm1
 		%assign curoffset curoffset + 16
 	%endrep
-	vpmovmskb edx, xmm3
-	test edx, edx
+	vptest xmm3, xmm3
 	jnz .loop
 	call PrintNumber
 	xor edi, edi
