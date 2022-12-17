@@ -144,6 +144,7 @@ ModeHandlers:
 	dq "7a",       Prob7a
 	dq "7b",       Prob7b
 	dq "8a",       Prob8a
+	dq "8b",       Prob8b
 	dq "testcat",  TestCat
 	dq "testmap",  TestMap
 	dq "testmem",  TestMemory

@@ -238,6 +238,24 @@ CompareStrings:
 	cmp al, [rdi + rcx]
 	ret
 
+ValidateDigits:
+	; rsi = buffer, rdx = size; returns carry set if invalid
+	; clobbers rax, rdx, rcx, rsi and xmm0
+	mov eax, "09"
+	vmovd xmm0, eax
+	mov eax, 2
+	test rdx, rdx
+	jz .done
+	add rsi, rdx
+	neg rdx
+.loop:
+	vpcmpestri xmm0, [rsi + rdx], 0x74
+	jc .done
+	add rdx, 16
+	jc .loop
+.done:
+	ret
+
 	section .rodata align=16
 SwappedIndexes:
 	db 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
