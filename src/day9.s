@@ -1,44 +1,8 @@
 	section .text
 Prob9a:
 	endbr64
-	call ReadMovementList
-	push rdi
-	lea rsi, [r13 + 72]
-	xor edi, edi
-	call MapMemory
-	lea rbx, [rdi + rsi - 72]
-	lea rcx, [r13 + 7]
-	shr rcx, 3
-	mov rbp, rdi
-	xor eax, eax
-	rep stosq
-	mov rdi, rbx
-	lea rax, [r12 - 1]
-	stosq
-	inc rax
-	stosq
-	inc rax
-	stosq
-	mov rax, -1
-	stosq
-	xor eax, eax
-	stosq
-	inc eax
-	stosq
-	mov rax, r12
-	not rax
-	stosq
-	inc rax
-	stosq
-	inc rax
-	mov [rdi], rax
-	pop r11
+	call InitializeMovementData
 	lea rsi, [r11 + 8]
-	mov rax, r15
-	lea rdx, [rbp + r14]
-	imul rax, r12
-	add rdx, rax
-	mov byte[rdx], 1
 	mov ecx, 4
 	lea r10, [rel .tailpositions]
 	mov rax, [r11]
@@ -93,8 +57,10 @@ Prob9a:
 	db 6 << 2, 4, 8 << 2, 4, 7 << 2, 1, 4 << 2, 4 ; 7 = down
 	db 7 << 2, 4, 5 << 2, 0, 7 << 2, 0, 5 << 2, 4 ; 8 = right and down
 
-ReadMovementList:
-	; out: rdi: movement list (mapped, null terminated), r13: cell count, (r14, r15): start, r12: width
+InitializeMovementData:
+	; out: r11 = movement list (zero terminated), r13 = cell count, rbp = tracking buffer (zero-initialized),
+	;      rbx = movement offset array (at end of tracking buffer), rdx = initial head position (in tracking buffer)
+
 	xor r13, r13
 	xor r14, r14
 	vpxor xmm12, xmm12, xmm12
@@ -162,7 +128,45 @@ ReadMovementList:
 	cmp rax, 1
 	jz InvalidInputError
 	shr rax, 60
-	jz Return
+	jnz .overflow
+
+	push rdi
+	lea rsi, [r13 + 72]
+	xor edi, edi
+	call MapMemory
+	lea rbx, [rdi + rsi - 72]
+	lea rcx, [r13 + 7]
+	shr rcx, 3
+	mov rbp, rdi
+	xor eax, eax
+	rep stosq
+	mov rdi, rbx
+	lea rax, [r12 - 1]
+	stosq
+	inc rax
+	stosq
+	inc rax
+	stosq
+	mov rax, -1
+	stosq
+	xor eax, eax
+	stosq
+	inc eax
+	stosq
+	mov rax, r12
+	not rax
+	stosq
+	inc rax
+	stosq
+	inc rax
+	mov [rdi], rax
+	pop r11
+	mov rax, r15
+	lea rdx, [rbp + r14]
+	imul rax, r12
+	add rdx, rax
+	ret
+
 .overflow:
 	lea rsi, [rel .message]
 	jmp ErrorExit
