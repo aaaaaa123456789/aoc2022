@@ -17,3 +17,4 @@
 %include "src/day6.s"
 %include "src/day7.s"
 %include "src/day8.s"
+%include "src/day9.s"

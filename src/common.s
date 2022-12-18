@@ -1,4 +1,5 @@
 	section .text
+; none of these functions are allowed to clobber r12-r15 or xmm12-xmm15
 
 ReadInputLine:
 	; input: none
