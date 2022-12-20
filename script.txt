@@ -16,3 +16,5 @@
 8b  input/8.txt
 9a  input/9.txt
 9b  input/9.txt
+10a input/10.txt
+10b input/10.txt
