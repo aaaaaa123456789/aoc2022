@@ -4,7 +4,7 @@ Prob9a:
 	call InitializeMovementData
 	lea rsi, [r11 + 8]
 	mov ecx, 4
-	lea r10, [rel .tailpositions]
+	lea r10, [rel RopeTailPositions]
 	mov rax, [r11]
 .entryloop:
 	sar rax, 1
@@ -27,7 +27,7 @@ Prob9a:
 	lodsq
 	test rax, rax
 	jnz .entryloop
-
+TallyPrintTailPositions:
 	mov rdi, r11
 	xor esi, esi
 	call MapMemory
@@ -45,17 +45,90 @@ Prob9a:
 	xor esi, esi
 	jmp MapMemory
 
-.tailpositions:
-	; new position and movement for each head movement (RLUD)
-	db 3 << 2, 8, 1 << 2, 4, 3 << 2, 4, 1 << 2, 8 ; 0 = left and up
-	db 0 << 2, 4, 2 << 2, 4, 4 << 2, 4, 1 << 2, 7 ; 1 = up
-	db 1 << 2, 4, 5 << 2, 6, 5 << 2, 4, 1 << 2, 6 ; 2 = right and up
-	db 3 << 2, 5, 4 << 2, 4, 6 << 2, 4, 0 << 2, 4 ; 3 = left
-	db 3 << 2, 4, 5 << 2, 4, 7 << 2, 4, 1 << 2, 4 ; 4 = same as head
-	db 4 << 2, 4, 5 << 2, 3, 8 << 2, 4, 2 << 2, 4 ; 5 = right
-	db 3 << 2, 2, 7 << 2, 4, 7 << 2, 2, 3 << 2, 4 ; 6 = left and down
-	db 6 << 2, 4, 8 << 2, 4, 7 << 2, 1, 4 << 2, 4 ; 7 = down
-	db 7 << 2, 4, 5 << 2, 0, 7 << 2, 0, 5 << 2, 4 ; 8 = right and down
+Prob9b:
+	endbr64
+	call InitializeMovementData
+	vpxor xmm0, xmm0, xmm0
+	vpcmpeqb xmm1, xmm1, xmm1
+	vpsubb xmm1, xmm0, xmm1
+	vmovdqa xmm6, xmm1
+	vmovdqa xmm7, xmm1
+	vpaddb xmm2, xmm1, xmm1
+	vmovdqa xmm4, xmm1
+	vmovdqa xmm5, xmm1
+	vpaddb xmm3, xmm2, xmm1
+	mov rsi, r11
+.entryloop:
+	mov r10, [rsi]
+	xor eax, eax
+	mov ecx, 2
+	sar r10, 1
+	cmovs ecx, eax
+	cmovns eax, ecx
+	mov edi, 1
+	cmovc eax, edi
+	cmovnc ecx, edi
+	mov rdi, r10
+	neg rdi
+	cmovns r10, rdi
+	mov edi, 9
+	cmovz r10, rdi
+	cmovz eax, ecx
+	neg ecx
+	add ecx, 2
+.step:
+	vpslldq xmm4, xmm4, 1
+	vpslldq xmm6, xmm6, 1
+	vpinsrb xmm4, xmm4, eax, 0
+	vpinsrb xmm6, xmm6, ecx, 0
+	vpaddb xmm8, xmm2, xmm4
+	vpaddb xmm9, xmm2, xmm6
+	vpsubb xmm8, xmm8, xmm5
+	vpsubb xmm9, xmm9, xmm7
+	vpcmpgtb xmm10, xmm8, xmm2
+	vpcmpgtb xmm11, xmm9, xmm2
+	vpcmpeqb xmm14, xmm8, xmm2
+	vpcmpeqb xmm15, xmm9, xmm2
+	vpaddb xmm10, xmm10, xmm10
+	vpaddb xmm11, xmm11, xmm11
+	vpsubb xmm10, xmm0, xmm10
+	vpsubb xmm11, xmm0, xmm11
+	vpsubb xmm10, xmm10, xmm14
+	vpsubb xmm11, xmm11, xmm15
+	vpsubb xmm14, xmm0, xmm8
+	vpsubb xmm15, xmm0, xmm9
+	vpsrlq xmm12, xmm8, 2
+	vpsrlq xmm13, xmm9, 2
+	vpsrlq xmm14, xmm14, 2
+	vpsrlq xmm15, xmm15, 2
+	vpsubb xmm12, xmm12, xmm14
+	vpsubb xmm13, xmm13, xmm15
+	vpand xmm12, xmm12, xmm3
+	vpand xmm13, xmm13, xmm3
+	vpcmpeqb xmm14, xmm12, xmm1
+	vpcmpeqb xmm15, xmm13, xmm1
+	vpblendvb xmm6, xmm11, xmm13, xmm14
+	vpblendvb xmm4, xmm10, xmm12, xmm15
+	vpsubb xmm10, xmm2, xmm10
+	vpsubb xmm11, xmm2, xmm11
+	vpsubb xmm12, xmm2, xmm12
+	vpsubb xmm13, xmm2, xmm13
+	vpcmpeqb xmm14, xmm12, xmm1
+	vpcmpeqb xmm15, xmm13, xmm1
+	vpblendvb xmm7, xmm13, xmm11, xmm14
+	vpblendvb xmm5, xmm12, xmm10, xmm15
+	vpextrb r8d, xmm6, 9 - 1
+	vpextrb edi, xmm4, 9 - 1
+	lea r8, [r8 * 3]
+	add rdi, r8
+	add rdx, [rbx + rdi * 8]
+	mov byte[rdx], 1
+	dec r10
+	jnz .step
+	lodsq
+	test rax, rax
+	jnz .entryloop
+	jmp TallyPrintTailPositions
 
 InitializeMovementData:
 	; out: r11 = movement list (zero terminated), r13 = cell count, rbp = tracking buffer (zero-initialized),
@@ -73,9 +146,7 @@ InitializeMovementData:
 	jz .loop
 	movzx eax, byte[rsi]
 	vmovd xmm0, eax
-	mov eax, "RLUD"
-	vmovd xmm1, eax
-	vpcmpistri xmm0, xmm1, 0
+	vpcmpistri xmm0, [rel RopeMovementCharacters], 0
 	jnc InvalidInputError
 	mov r12d, ecx
 	inc rsi
@@ -172,3 +243,18 @@ InitializeMovementData:
 	jmp ErrorExit
 
 .message: db `error: grid size would overflow\n`, 0
+
+	section .rodata align=16
+RopeMovementCharacters:
+	dq "RLUD" ; padding to 8 bytes for alignment
+RopeTailPositions:
+	; new position and movement for each head movement (RLUD)
+	db 3 << 2, 8, 1 << 2, 4, 3 << 2, 4, 1 << 2, 8 ; 0 = left and up
+	db 0 << 2, 4, 2 << 2, 4, 4 << 2, 4, 1 << 2, 7 ; 1 = up
+	db 1 << 2, 4, 5 << 2, 6, 5 << 2, 4, 1 << 2, 6 ; 2 = right and up
+	db 3 << 2, 5, 4 << 2, 4, 6 << 2, 4, 0 << 2, 4 ; 3 = left
+	db 3 << 2, 4, 5 << 2, 4, 7 << 2, 4, 1 << 2, 4 ; 4 = same as head
+	db 4 << 2, 4, 5 << 2, 3, 8 << 2, 4, 2 << 2, 4 ; 5 = right
+	db 3 << 2, 2, 7 << 2, 4, 7 << 2, 2, 3 << 2, 4 ; 6 = left and down
+	db 6 << 2, 4, 8 << 2, 4, 7 << 2, 1, 4 << 2, 4 ; 7 = down
+	db 7 << 2, 4, 5 << 2, 0, 7 << 2, 0, 5 << 2, 4 ; 8 = right and down
