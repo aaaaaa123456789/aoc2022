@@ -115,7 +115,6 @@ AllocateMemory:
 	pop rax
 	sub esi, eax
 	mov [rel wAllocationRemainingSpace], esi
-	lea rsi, [rdi + allocation.allocation]
 	mov [rdi - allocation.allocation + allocation.base], rdi
 	sub rdi, allocation.allocation
 	mov [rdi + allocation.size], rax
@@ -135,7 +134,7 @@ AllocateMemory:
 	mov rax, [rdi + allocation.size]
 	lea rdx, [rdi + allocation.allocation]
 	cmp rsi, rax
-	jz .done
+	jz .restoresize
 	jc .shrink
 	cmp rsi, MAPPING_THRESHOLD
 	jnc .move
@@ -158,6 +157,7 @@ AllocateMemory:
 	mov esi, eax
 .updated:
 	mov [rdi + allocation.size], rsi
+.restoresize:
 	add esi, allocation.allocation
 	ret
 
