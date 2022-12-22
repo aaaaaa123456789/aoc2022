@@ -93,7 +93,9 @@ Prob11b:
 	mov rcx, r12
 .multiplyloop:
 	mov edx, [rbp]
-	imul rax, rdx
+	mul rdx
+	test rdx, rdx
+	jnz .overflow
 	add rbp, monkey.size
 	dec rcx
 	jnz .multiplyloop
@@ -108,6 +110,12 @@ Prob11b:
 	div qword[wModeData]
 	mov rax, rdx
 	ret
+
+.overflow:
+	lea rsi, [rel .message]
+	jmp ErrorExit
+
+.message: db `error: divisors too large\n`, 0
 
 DivideByThreeCallback:
 	endbr64
