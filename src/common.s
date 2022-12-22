@@ -224,7 +224,7 @@ SkipSpaces:
 	ret
 
 CompareStrings:
-	; rsi, rdi: strings to compare; returns in flags; preserves all integer registers except rax and rcx
+	; rsi, rdi: strings to compare; returns in flags; preserves all registers except rax, rcx and xmm0
 	mov rax, -16
 .loop:
 	add rax, 16
@@ -255,6 +255,18 @@ ValidateDigits:
 	sub rdx, -16 ; for inverted carry behavior
 	jc .loop
 .done:
+	ret
+
+SkipNonDigits:
+	; rsi = buffer; clobbers rcx and xmm0; returns carry if a number is found (and rsi clobbered otherwise)
+	sub rsi, 16
+	mov ecx, "09"
+	vmovd xmm0, ecx
+.loop:
+	add rsi, 16
+	vpcmpistri xmm0, [rsi], 4
+	ja .loop
+	lea rsi, [rsi + rcx] ; don't change flags
 	ret
 
 	section .rodata align=16

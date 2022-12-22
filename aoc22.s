@@ -19,3 +19,4 @@
 %include "src/day8.s"
 %include "src/day9.s"
 %include "src/day10.s"
+%include "src/day11.s"

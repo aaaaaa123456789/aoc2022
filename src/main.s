@@ -154,6 +154,8 @@ ModeHandlers:
 	dq "9b",       Prob9b
 	dq "10a",      Prob10a
 	dq "10b",      Prob10b
+	dq "11a",      Prob11a
+	dq "11b",      Prob11b
 	dq "testcat",  TestCat
 	dq "testmap",  TestMap
 	dq "testmem",  TestMemory
