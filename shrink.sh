@@ -48,7 +48,7 @@ while (( progheaders == start || sectheaders == start )); do
 	if (( progheaders == start )); then (( start += progsize * progcount )); fi
 	if (( sectheaders == start )); then (( start += sectsize * sectcount )); fi
 done
-(( start = start & -4 ))
+(( start = start & -8 ))
 
 (( end = filesize ))
 for (( header = 0; header < progcount; header ++ )); do
@@ -57,13 +57,13 @@ for (( header = 0; header < progcount; header ++ )); do
 		if (( blockstart < end )); then (( end = blockstart )); fi
 	fi
 done
-(( end = end & -4 ))
+(( end = end & -8 ))
 
 # find movable components and move them to the gap if they will fit
 shrink=true
 while $shrink; do
 	shrink=false
-	(( size = (progsize * progcount + 3) & -4 ))
+	(( size = (progsize * progcount + 7) & -8 ))
 	if (( (progheaders + size == filesize) && (size <= end - start) )); then
 		writevalue 32 $start
 		copybytes $start $progheaders $size
@@ -72,7 +72,7 @@ while $shrink; do
 		(( start += size ))
 		shrink=true
 	fi
-	(( size = (sectsize * sectcount + 3) & -4 ))
+	(( size = (sectsize * sectcount + 7) & -8 ))
 	if (( (sectheaders + size == filesize) && (size <= end - start) )); then
 		writevalue 40 $start
 		copybytes $start $sectheaders $size
@@ -84,10 +84,10 @@ while $shrink; do
 	for (( section = 0; section < sectcount; section ++ )); do
 		(( header = sectheaders + section * sectsize ))
 		if (( `readvalue $(( header + 4 ))` < 2 )); then continue; fi
-		(( size = (`readvalue $(( header + 32 ))` + 3) & -4 ))
-		if (( (size == 0) || (`readvalue $(( header + 48 ))` > 4) )); then continue; fi
+		(( size = (`readvalue $(( header + 32 ))` + 7) & -8 ))
+		if (( (size == 0) || (`readvalue $(( header + 48 ))` > 8) )); then continue; fi
 		position=`readvalue $(( header + 24 ))`
-		if (( (position + size == filesize) && (size <= end - start) )); then
+		if (( (position + size >= filesize) && (size <= end - start) )); then
 			writevalue $(( header + 24 )) $start
 			copybytes $start $position $size
 			filesize=$position
