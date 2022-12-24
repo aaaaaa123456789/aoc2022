@@ -4,6 +4,7 @@
 %include "src/main.s"
 %include "src/common.s"
 %include "src/alloc.s"
+%include "src/modes.s"
 
 %include "src/script.s"
 %include "src/tests.s"
