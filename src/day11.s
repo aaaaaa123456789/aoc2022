@@ -99,7 +99,7 @@ Prob11b:
 	add rbp, monkey.size
 	dec rcx
 	jnz .multiplyloop
-	mov [wModeData], rax
+	mov [rel wModeData], rax
 	mov r14, 10000
 	lea r15, [rel .callback]
 	jmp HandleMonkeyRounds
@@ -107,7 +107,7 @@ Prob11b:
 .callback:
 	endbr64
 	xor edx, edx
-	div qword[wModeData]
+	div qword[rel wModeData]
 	mov rax, rdx
 	ret
 
