@@ -214,6 +214,17 @@ DummyCallback:
 Return:
 	ret
 
+StringLength:
+	; rsi: string; outputs rdi: length; preserves all registers except rcx and xmm0 and returns flags according to rdi
+	xor edi, edi
+.loop:
+	vlddqu xmm0, [rsi + rdi]
+	vpcmpistri xmm0, xmm0, 0x38
+	lea rdi, [rdi + rcx]
+	jnc .loop
+	test rdi, rdi
+	ret
+
 SkipSpaces:
 	; rsi: pointer to string; updated to skip spaces
 	mov al, " "

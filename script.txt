@@ -20,3 +20,5 @@
 10b input/10.txt
 11a input/11.txt
 11b input/11.txt
+12a input/12.txt
+12b input/12.txt
