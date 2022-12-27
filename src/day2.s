@@ -49,9 +49,9 @@ TallyRPSThrows:
 
 .done:
 	pop rsi
-	movdqa xmm0, [rsp]
-	movdqa xmm1, [rsp + 16]
-	movdqa xmm2, [rsp + 32]
+	vmovdqa xmm0, [rsp]
+	vmovdqa xmm1, [rsp + 16]
+	vmovdqa xmm2, [rsp + 32]
 	add rsp, 48
 	vpmulld xmm0, xmm0, [rsi]
 	vpmulld xmm1, xmm1, [rsi + 16]

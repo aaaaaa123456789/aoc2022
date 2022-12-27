@@ -55,7 +55,7 @@ Prob1b:
 	cmp rax, rdi
 	lea rdi, [rel .overflow]
 	ja ErrorExit
-	movdqa xmm0, [rsp]
+	vmovdqa xmm0, [rsp]
 	vpinsrd xmm0, xmm0, eax, 3
 	vpshufd xmm1, xmm0, 0xff
 	vpcmpgtd xmm1, xmm1, xmm0
@@ -64,7 +64,7 @@ Prob1b:
 	bsf eax, eax
 	lea rdi, [rel .swapmasks]
 	vpshufb xmm0, xmm0, [rdi + rax * 4]
-	movdqa [rsp], xmm0
+	vmovdqa [rsp], xmm0
 	test edx, edx
 	jz .outerloop
 	add rsp, 16
