@@ -22,3 +22,4 @@
 %include "src/day10.s"
 %include "src/day11.s"
 %include "src/day12.s"
+%include "src/day13.s"
