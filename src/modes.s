@@ -29,6 +29,8 @@ ModeHandlers:
 	dq "12b",      Prob12b
 	dq "13a",      Prob13a
 	dq "13b",      Prob13b
+	dq "14a",      Prob14a
+	dq "14b",      Prob14b
 	dq "testcat",  TestCat
 	dq "testmap",  TestMap
 	dq "testmem",  TestMemory
