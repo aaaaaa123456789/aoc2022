@@ -81,7 +81,7 @@ TestMap:
 	jc InvalidInputError
 	mov rcx, rdi
 	cmp rcx, 187
-	lea rsi, [rel .highcounterr]
+	lea rsi, [rel ErrorMessages.highcount]
 	jnc .popprint
 	test ecx, ecx
 	jz .loop
@@ -141,11 +141,8 @@ TestMap:
 	ret
 
 .overflow:
-	lea rsi, [rel .overflowerr]
+	lea rsi, [rel ErrorMessages.overflow]
 .popprint:
 	add rsp, 8
 	call PrintMessage
 	jmp .loop
-
-.highcounterr: db `error: read count too high\n`, 0
-.overflowerr: db `error: value doesn't fit in a byte\n`, 0

@@ -6,10 +6,8 @@ Prob12a:
 	cmp eax, 0x7fffffff
 	jnz PrintTerrainElevation
 UnreachableTerrain:
-	lea rsi, [rel .message]
+	lea rsi, [rel ErrorMessages.unreachable]
 	jmp ErrorExit
-
-.message: db `error: unreachable location\n`, 0
 
 Prob12b:
 	endbr64

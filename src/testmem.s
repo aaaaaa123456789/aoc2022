@@ -184,7 +184,7 @@ TestMemory:
 	jmp .loop
 
 .wouldleak:
-	lea rsi, [rel .leakmessage]
+	lea rsi, [rel WarningMessages.bufferleak]
 	jmp .print
 
 .map:
@@ -222,13 +222,9 @@ TestMemory:
 	jmp .mapprint
 
 .nullbuffer:
-	lea rsi, [rel .nullmessage]
+	lea rsi, [rel WarningMessages.buffernull]
 	jmp .print
 
 .badbuffer:
-	lea rsi, [rel .buffermessage]
+	lea rsi, [rel ErrorMessages.invalidbuffer]
 	jmp ErrorExit
-
-.buffermessage: db `error: invalid buffer number\n`, 0
-.nullmessage: db `warning: buffer is null\n`, 0
-.leakmessage: db `warning: buffer would be leaked\n`, 0

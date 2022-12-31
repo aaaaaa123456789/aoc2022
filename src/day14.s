@@ -5,10 +5,8 @@ Prob14a:
 	call ReadLayoutGrid
 	call ProcessLayout
 	jc PrintLayoutTotal
-	lea rsi, [rel .error]
+	lea rsi, [rel ErrorMessages.fillup]
 	jmp ErrorExit
-
-.error: db `error: layout fills up\n`, 0
 
 Prob14b:
 	endbr64

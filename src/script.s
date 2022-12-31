@@ -134,13 +134,13 @@ ScriptMode:
 	mov [rel wInputFD], eax
 	jz .loop
 .inputerror:
-	lea rsi, [rel .errormessage]
+	lea rsi, [rel ErrorMessages.open]
 	jmp ErrorExit
 
 .invalidmode:
 	lea rdi, [rel wTextBuffer]
-	lea rsi, [rel .invalidmessage]
-	mov ecx, .end_invalidmessage - .invalidmessage
+	lea rsi, [rel WarningMessages.invalidmode]
+	mov ecx, WarningMessages.end_invalidmode - WarningMessages.invalidmode
 	rep movsb
 	mov [rdi], rbx
 	xor eax, eax
@@ -175,12 +175,8 @@ ScriptMode:
 	cmp byte[rdi - 1], 0
 	jnz .prognameloop
 	dec rdi
-	lea rsi, [rel .usagemessage]
-	mov ecx, .end_usagemessage - .usagemessage
+	lea rsi, [rel UsageMessages.script]
+	mov ecx, UsageMessages.end_script - UsageMessages.script
 	rep movsb
 	lea rsi, [rel wTextBuffer]
 	jmp ErrorExit
-
-.errormessage: db `error: I/O error\n`, 0
-.invalidmessage: withend db "warning: invalid mode: "
-.usagemessage: withend db ` script [<path prefix>]\n`, 0

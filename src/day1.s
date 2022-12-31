@@ -53,7 +53,7 @@ Prob1b:
 	pop rax
 	mov edi, 0xffffffff
 	cmp rax, rdi
-	lea rdi, [rel .overflow]
+	lea rdi, [rel ErrorMessages.overflow]
 	ja ErrorExit
 	vmovdqa xmm0, [rsp]
 	vpinsrd xmm0, xmm0, eax, 3
@@ -73,8 +73,6 @@ Prob1b:
 	call PrintNumber
 	xor edi, edi
 	ret
-
-.overflow: db `error: overflow (total exceeds 0xffffffff)\n`, 0
 
 	pushsection .rodata align=16
 .swapmasks:

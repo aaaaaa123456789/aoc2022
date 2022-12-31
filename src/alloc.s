@@ -69,14 +69,12 @@ MapMemory:
 	test rax, rax
 	jz .done
 .error:
-	lea rsi, [rel .message]
+	lea rsi, [rel ErrorMessages.allocation]
 	mov dword[rel wOutputFD], 2
 	call PrintMessage
 	mov edi, 2
 	mov eax, exit_group
 	syscall
-.message:
-	db `error: failed to allocate memory\n`, 0
 
 AllocateMemory:
 	; in: rdi = current allocation (null to allocate new), rsi = size (zero to free)

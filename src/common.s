@@ -69,13 +69,11 @@ ReadInputLine:
 	mov [rel wInputEOF], si
 	jmp ReadInputLine
 
-.errormessage: db `error: input failed\n`, 0
-
 .error:
 	mov edi, [rel wOutputFD]
 	push rdi
 	mov dword[rel wOutputFD], 2
-	lea rsi, [rel .errormessage]
+	lea rsi, [rel ErrorMessages.read]
 	call PrintMessage
 	pop rdi
 	mov [rel wOutputFD], edi

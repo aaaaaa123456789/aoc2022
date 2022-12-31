@@ -4,6 +4,11 @@
 	%endif
 %endmacro
 
+%imacro message 1+
+	db %1
+	db `\n`, 0
+%endmacro
+
 %imacro withend 1+
 	%defstr %%label %00
 	%substr %%sb %%label 1

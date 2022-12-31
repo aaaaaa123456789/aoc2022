@@ -134,7 +134,7 @@ BuildFilesystemTree:
 	dec rdx
 	jnz .search
 .notfound:
-	lea rsi, [rel .notfoundmessage]
+	lea rsi, [rel ErrorMessages.notfound]
 	jmp ErrorExit
 
 .found:
@@ -162,7 +162,7 @@ BuildFilesystemTree:
 	cmp qword[rsi + direntry.size], 0
 	jge InvalidInputError
 	cmp qword[rsi + direntry.namebuf], 0
-	lea rsi, [rel .multiplemessage]
+	lea rsi, [rel ErrorMessages.duplicate]
 	jnz ErrorExit
 	xor eax, eax
 	assert wCurrentEntryBuffer == wCurrentEntryCount + 8
@@ -250,9 +250,6 @@ BuildFilesystemTree:
 	jnz .nextline
 .done:
 	ret
-
-.notfoundmessage: db `error: directory not found\n`, 0
-.multiplemessage: db `error: directory listed multiple times\n`, 0
 
 DestroyFilesystemTree:
 	; exits with rdi = 0

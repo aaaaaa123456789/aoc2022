@@ -239,10 +239,8 @@ InitializeMovementData:
 	ret
 
 .overflow:
-	lea rsi, [rel .message]
+	lea rsi, [rel ErrorMessages.overflow]
 	jmp ErrorExit
-
-.message: db `error: grid size would overflow\n`, 0
 
 	section .rodata align=16
 RopeMovementCharacters:

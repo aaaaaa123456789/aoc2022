@@ -112,10 +112,8 @@ Prob11b:
 	ret
 
 .overflow:
-	lea rsi, [rel .message]
+	lea rsi, [rel ErrorMessages.overflow]
 	jmp ErrorExit
-
-.message: db `error: divisors too large\n`, 0
 
 DivideByThreeCallback:
 	endbr64
@@ -215,7 +213,7 @@ ReadMonkeyList:
 	lea r12, [r12 + 1]
 	jnz .loop
 .invalidmonkey:
-	lea rsi, [rel .message]
+	lea rsi, [rel ErrorMessages.invalidtarget]
 	jmp ErrorExit
 
 .done:
@@ -265,5 +263,3 @@ ReadMonkeyList:
 	call ParseNumber
 	jc InvalidInputError
 	ret
-
-.message: db `error: invalid throw target\n`, 0

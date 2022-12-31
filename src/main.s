@@ -116,15 +116,6 @@ ErrorExit:
 	mov eax, exit_group
 	syscall
 
-UsageMessages:
-	.defaultprogname: db "<program name>", 0
-	.usage1: withend db "usage: "
-	.usage2: withend db ` <mode> <args...>\n\nAvailable modes`
-
 InvalidInputError:
-	lea rsi, [rel .message]
+	lea rsi, [rel ErrorMessages.invalidinput]
 	jmp ErrorExit
-
-.message: db "error: invalid input" ; followed by Newline
-
-Newline: db `\n`, 0
