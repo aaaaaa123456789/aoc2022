@@ -13,3 +13,6 @@ wAllocationRemainingSpace: resd 1
 
 wCurrentAllocationMapping: resq 1
 wLastAllocation: resq 1
+
+wScriptPathPrefix: resq 1
+wScriptPathInsertionPoint: resq 1

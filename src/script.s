@@ -3,10 +3,36 @@ ScriptMode:
 	; reads from standard input a script containing lines with a mode and a filename (separated by whitespace) and
 	; executes those modes one after another with the files as input; blank lines and lines starting with # are ignored
 	endbr64
+	cmp qword[rel wScriptPathPrefix], 0
+	jnz .pathloaded
+	cmp rdi, 1
+	jc .pathloaded
+	jnz .extraargs
+	mov rsi, [rsi]
+	call StringLength
+	jz .pathloaded
+	push rsi
+	push rdi
+	lea rsi, [rdi + 1024]
+	xor edi, edi
+	call AllocateMemory
+	mov [rel wScriptPathPrefix], rdi
+	pop rcx
+	pop rsi
+	rep movsb
+	mov al, "/"
+	cmp byte[rdi - 1], al
+	jz .gotslash
+	stosb
+.gotslash:
+	mov [rel wScriptPathInsertionPoint], rdi
+.pathloaded:
 	push 0
 .loop:
 	call ReadInputLine
 	jc .done
+	cmp rdi, 1024
+	ja InvalidInputError
 	lea rcx, [rdi + 1]
 	mov rdi, rsi
 	mov eax, " "
@@ -27,8 +53,6 @@ ScriptMode:
 	ja InvalidInputError
 	repz scasb
 	dec rdi
-	cmp byte[rdi], 0
-	jz InvalidInputError
 	mov rbx, [rsi]
 	neg rdx
 	lea rcx, [64 + 8 * rdx]
@@ -47,9 +71,22 @@ ScriptMode:
 	push qword[rsi + 8]
 .open:
 	push rdi
+	mov rsi, [wScriptPathInsertionPoint]
+	test rsi, rsi
+	jz .gotfilename
+	cmp byte[rdi], "/"
+	jz .gotfilename
+	xchg rdi, rsi
+.filenameloop:
+	movsb
+	cmp byte[rdi - 1], 0
+	jnz .filenameloop
+	mov rdi, [wScriptPathPrefix]
+.gotfilename:
+	cmp byte[rdi], 0
+	jz InvalidInputError
 	assert O_RDONLY == 0
 	xor esi, esi
-	; rdi already points to the filename
 	mov eax, open
 	syscall
 	pop rdi
@@ -115,9 +152,35 @@ ScriptMode:
 	mov dword[rsp], 2
 	jmp .loop
 
-.errormessage: db `error: I/O error\n`, 0
-.invalidmessage: withend db "warning: invalid mode: "
-
 .done:
+	mov rdi, [rel wScriptPathPrefix]
+	test rdi, rdi
+	jz .nofree
+	xor esi, esi
+	call AllocateMemory
+.nofree:
 	pop rdi
 	ret
+
+.extraargs:
+	lea rdi, [rel wTextBuffer]
+	lea rsi, [rel UsageMessages.usage1]
+	mov ecx, UsageMessages.end_usage1 - UsageMessages.usage1
+	rep movsb
+	lea rsi, [rel UsageMessages.defaultprogname]
+	test rdx, rdx
+	cmovnz rsi, rdx
+.prognameloop:
+	movsb
+	cmp byte[rdi - 1], 0
+	jnz .prognameloop
+	dec rdi
+	lea rsi, [rel .usagemessage]
+	mov ecx, .end_usagemessage - .usagemessage
+	rep movsb
+	lea rsi, [rel wTextBuffer]
+	jmp ErrorExit
+
+.errormessage: db `error: I/O error\n`, 0
+.invalidmessage: withend db "warning: invalid mode: "
+.usagemessage: withend db ` script [<path prefix>]\n`, 0
