@@ -48,6 +48,7 @@
 %assign open         2
 %assign close        3
 %assign mmap         9
+%assign mprotect    10
 %assign munmap      11
 %assign mremap      25
 %assign fcntl       72
@@ -58,13 +59,15 @@
 %assign EBADF 9
 
 ; other kernel API constants
-%assign F_GETFD            1
-%assign MAP_PRIVATE        2
-%assign MAP_ANONYMOUS   0x20
-%assign MREMAP_MAYMOVE     1
-%assign O_RDONLY           0
-%assign PROT_READ          1
-%assign PROT_WRITE         2
+%assign F_GETFD              1
+%assign MAP_PRIVATE          2
+%assign MAP_FIXED         0x10
+%assign MAP_ANONYMOUS     0x20
+%assign MAP_LOCKED      0x2000
+%assign MREMAP_MAYMOVE       1
+%assign O_RDONLY             0
+%assign PROT_READ            1
+%assign PROT_WRITE           2
 
 	section .text align=4096
 	section .bss align=4096

@@ -71,7 +71,7 @@ ScriptMode:
 	push qword[rsi + 8]
 .open:
 	push rdi
-	mov rsi, [wScriptPathInsertionPoint]
+	mov rsi, [rel wScriptPathInsertionPoint]
 	test rsi, rsi
 	jz .gotfilename
 	cmp byte[rdi], "/"
@@ -81,7 +81,7 @@ ScriptMode:
 	movsb
 	cmp byte[rdi - 1], 0
 	jnz .filenameloop
-	mov rdi, [wScriptPathPrefix]
+	mov rdi, [rel wScriptPathPrefix]
 .gotfilename:
 	cmp byte[rdi], 0
 	jz InvalidInputError

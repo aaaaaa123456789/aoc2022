@@ -1,6 +1,8 @@
 %include "src/defs.s"
 %include "src/wmem.s"
 
+%include "src/loader.s"
+
 %include "src/main.s"
 %include "src/common.s"
 %include "src/alloc.s"
