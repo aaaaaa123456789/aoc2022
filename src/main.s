@@ -119,3 +119,70 @@ ErrorExit:
 InvalidInputError:
 	lea rsi, [rel ErrorMessages.invalidinput]
 	jmp ErrorExit
+
+ShowAddresses:
+	; shows the addresses of the requested modes, or of _start and wModeData if none are requested
+	; returns 0 if all modes are valid, 1 if not, or 2 if none are requested; can be used to check if a mode is valid
+	test rdi, rdi
+	jz .nomodes
+	push 0
+.loop:
+	push rdi
+	lodsq
+	push rsi
+	lea rdi, [rel wTextBuffer]
+	mov qword[rdi], 0
+	mov rsi, rax
+	mov ecx, 9
+	lodsb
+.readloop:
+	test al, al
+	jz .read
+	stosb
+	lodsb
+	dec ecx
+	jnz .readloop
+	mov qword[rel wTextBuffer], 0
+.read:
+	mov eax, ": "
+	mov rdx, [rel wTextBuffer]
+	stosw
+	test rdx, rdx
+	jz .invalid
+	lea rsi, [rel ModeHandlers]
+.modeloop:
+	lodsq
+	test rax, rax
+	jz .invalid
+	cmp rax, rdx
+	lodsq
+	jnz .modeloop
+	call NumberToString
+	mov word[rdi], `\n`
+	lea rsi, [rel wTextBuffer]
+	call PrintMessage
+.next:
+	pop rsi
+	pop rdi
+	dec rdi
+	jnz .loop
+	pop rdi
+	ret
+
+.invalid:
+	mov byte[rsp + 16], 1
+	jmp .next
+
+.nomodes:
+	lea rax, [rel _start]
+	lea rdi, [rel wTextBuffer]
+	call NumberToString
+	mov al, `\n`
+	stosb
+	lea rax, [rel wModeData]
+	call NumberToString
+	mov word[rdi], `\n`
+	lea rsi, [rel wTextBuffer]
+	call PrintMessage
+	mov edi, 2
+	ret

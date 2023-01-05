@@ -70,4 +70,5 @@
 %assign PROT_WRITE           2
 
 	section .text align=4096
+	section .rodata align=16
 	section .bss align=4096

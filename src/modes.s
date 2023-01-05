@@ -34,4 +34,5 @@ ModeHandlers:
 	dq "testcat",  TestCat
 	dq "testmap",  TestMap
 	dq "testmem",  TestMemory
+	dq "showaddr", ShowAddresses
 	dq 0,          InvalidModeHandler
