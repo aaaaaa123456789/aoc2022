@@ -1,4 +1,5 @@
 *.o
 aoc22
+aoc22dbg
 input
 samples
