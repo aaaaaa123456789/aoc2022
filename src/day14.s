@@ -104,14 +104,10 @@ ReadLayoutGrid:
 	add r15, rsi
 	add rsi, r14
 	xor edi, edi
-	push rsi
 	call MapMemory
 	mov r10, r13
 	mov r13, rdi
 	add r15, rdi
-	pop rcx
-	xor eax, eax
-	rep stosb
 	mov rsi, r10
 .parseloop:
 	lodsd

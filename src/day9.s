@@ -206,11 +206,7 @@ InitializeMovementData:
 	xor edi, edi
 	call MapMemory
 	lea rbx, [rdi + rsi - 72]
-	lea rcx, [r13 + 7]
-	shr rcx, 3
 	mov rbp, rdi
-	xor eax, eax
-	rep stosq
 	mov rdi, rbx
 	lea rax, [r12 - 1]
 	stosq

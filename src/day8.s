@@ -21,10 +21,6 @@ Prob8a:
 	mov [rel wTreeVisibilityGrid], rdi
 	mov r15, rdi
 	mov r10, [rel wTreeGridSize]
-	lea rcx, [r10 + 7]
-	shr rcx, 3
-	xor eax, eax
-	rep stosq
 
 	mov r12d, [rel wTreeGridWidth]
 	mov edx, [rel wTreeGridHeight]

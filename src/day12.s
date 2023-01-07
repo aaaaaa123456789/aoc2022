@@ -52,11 +52,9 @@ ProcessTerrainElevationData:
 	xor edi, edi
 	call MapMemory
 	mov r13, rdi
-	lea rcx, [r12 + 1]
-	xor eax, eax
-	rep stosb
+	lea rdi, [rdi + r12 + 1]
 	mov rsi, r15
-	lea rcx, [r12 - 1]
+	lea rcx, [r12 - 2]
 	rep movsb
 .readloop:
 	call ReadInputLine
@@ -72,8 +70,7 @@ ProcessTerrainElevationData:
 	call MapMemory
 	mov r13, rdi
 	lea rdi, [rdi + r14 + 1]
-	mov byte[rdi - 1], 0
-	lea rcx, [r12 - 1]
+	lea rcx, [r12 - 2]
 	mov rsi, r15
 	rep movsb
 	add r14, r12
@@ -84,10 +81,7 @@ ProcessTerrainElevationData:
 	lea rsi, [r14 + r12]
 	call MapMemory
 	mov r13, rdi
-	mov rcx, r12
 	add r14, r12
-	xor eax, eax
-	rep stosb
 
 	xor edi, edi
 	lea rsi, [r14 * 9]
