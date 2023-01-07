@@ -1,6 +1,14 @@
 	section .text
+Prob15aSmall:
+	; variant of 15a with a smaller board, used for the sample inputs
+	endbr64
+	push 10
+	jmp Prob15a.go
+
 Prob15a:
 	endbr64
+	push 2000000
+.go:
 	xor r12, r12
 	xor r13, r13
 	xor r14, r14
@@ -9,7 +17,7 @@ Prob15a:
 	jc .done
 .loop:
 	vpextrd eax, xmm13, 1
-	cmp eax, 2000000
+	cmp eax, [rsp]
 	jnz .nobeacon
 	test r15, r15
 	jz .beacon
@@ -27,7 +35,7 @@ Prob15a:
 	vmovd [rdi + r15 * 4 - 4], xmm13
 .nobeacon:
 	vpshufd xmm0, xmm12, 0xd4
-	mov eax, 2000000
+	mov eax, [rsp]
 	vpinsrd xmm1, xmm13, eax, 2
 	vpsubd xmm0, xmm0, xmm1
 	vpabsd xmm0, xmm0
@@ -84,6 +92,7 @@ Prob15a:
 	inc r13
 
 .done:
+	add rsp, 8
 	vpxor xmm0, xmm0, xmm0
 	mov rsi, r12
 	mov rcx, r13
