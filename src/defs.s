@@ -51,6 +51,7 @@
 %assign mprotect    10
 %assign munmap      11
 %assign mremap      25
+%assign getpid      39
 %assign fcntl       72
 %assign exit_group 231
 

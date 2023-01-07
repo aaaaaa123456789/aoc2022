@@ -2,6 +2,11 @@
 
 	section loader align=16 exec
 Loader:
+	; get the current process ID and use it later for randomization
+	mov eax, getpid
+	syscall
+	mov r10, rax
+
 	; check for AVX support and exit early if not detected
 	mov eax, 1
 	cpuid
@@ -10,9 +15,14 @@ Loader:
 	jnc .errorexit
 
 	; generate a random reload address (self-ASLR)
+	mov rax, r10
+	shr rax, 2
 	mov rbx, rsp
 	shl rbx, 20
+	xor rbx, rax
 	mov rax, 0x5851f42d4c957f2d ; common 64-bit LCG constant
+	imul rbx, rax
+	inc rbx
 	imul rbx, rax
 	shr rbx, 32
 	inc ebx
@@ -41,6 +51,8 @@ Loader:
 	mov ecx, eax
 	shr eax, 2
 	xor eax, ecx
+	shl r10, 12
+	xor rax, r10
 	and eax, 0x3000
 	shl rbx, 14
 	add rbx, rax
@@ -161,7 +173,6 @@ Loader:
 	ud2
 
 	; pad for alignment! Must be done manually (the assert at the end enforces the alignment)
-	times 2 nop
 
 .unmap:
 	endbr64
