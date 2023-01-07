@@ -268,15 +268,21 @@ ValidateDigits:
 
 SkipNonDigits:
 	; rsi = buffer; clobbers rcx and xmm0; returns carry if a number is found (and rsi clobbered otherwise)
-	sub rsi, 16
 	mov ecx, "09"
-	vmovd xmm0, ecx
+.start:
+	sub rsi, 16
+	vmovq xmm0, rcx
 .loop:
 	add rsi, 16
 	vpcmpistri xmm0, [rsi], 4
 	ja .loop
 	lea rsi, [rsi + rcx] ; don't change flags
 	ret
+
+SkipNonSignedDigits:
+	; like above, but also accepts + and -
+	mov rcx, "09++--"
+	jmp SkipNonDigits.start
 
 	section .rodata align=16
 SwappedIndexes:
