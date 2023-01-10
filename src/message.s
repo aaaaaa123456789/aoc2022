@@ -15,6 +15,7 @@ ErrorMessages:
 	.invalidtarget: message "error: invalid target"
 	.unreachable: message "error: unreachable"
 	.fillup: message "error: layout fills up"
+	.nolocation: message "error: no available location"
 
 WarningMessages:
 	.invalidmode: withend db "warning: invalid mode: "

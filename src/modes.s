@@ -32,7 +32,9 @@ ModeHandlers:
 	dq "14a",      Prob14a
 	dq "14b",      Prob14b
 	dq "15a",      Prob15a
+	dq "15b",      Prob15b
 	dq "small15a", Prob15aSmall
+	dq "small15b", Prob15bSmall
 	dq "testcat",  TestCat
 	dq "testmap",  TestMap
 	dq "testmem",  TestMemory
