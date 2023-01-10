@@ -75,6 +75,7 @@ MapMemory:
 	mov edi, 2
 	mov eax, exit_group
 	syscall
+	ud2
 
 AllocateMemory:
 	; in: rdi = current allocation (null to allocate new), rsi = size (zero to free)

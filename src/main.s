@@ -25,6 +25,7 @@ _start:
 	mov edi, 122
 	mov eax, exit_group
 	syscall
+	ud2
 .goodfd:
 
 	; initialize non-zero variables
@@ -71,6 +72,7 @@ _start:
 	call [rcx + 8]
 	mov eax, exit_group
 	syscall
+	ud2
 
 InvalidModeHandler:
 	endbr64
@@ -115,6 +117,7 @@ ErrorExit:
 	mov edi, 1
 	mov eax, exit_group
 	syscall
+	ud2
 
 InvalidInputError:
 	lea rsi, [rel ErrorMessages.invalidinput]
