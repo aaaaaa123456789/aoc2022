@@ -1,8 +1,9 @@
 	section .text
-Prob15aSmall:
-	; variant of 15a with a smaller board, used for the sample inputs
+Prob15aVariableSize:
+	; variant of 15a with a center line defined by command-line argument, for debugging the sample data
 	endbr64
-	push 10
+	call ParseNumberFromArgument
+	push rdi
 	jmp Prob15a.go
 
 Prob15a:
@@ -123,9 +124,11 @@ Prob15a:
 	mov rdi, r14
 	jmp AllocateMemory
 
-Prob15bSmall:
+Prob15bVariableSize:
+	; variant of 15b with a center line defined by command-line argument, for debugging the sample data
 	endbr64
-	push 10
+	call ParseNumberFromArgument
+	push rdi
 	jmp Prob15b.go
 
 Prob15b:

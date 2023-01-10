@@ -118,6 +118,29 @@ PrintMessage:
 .done:
 	ret
 
+ParseNumberFromArgument:
+	; reads a number from the next command-line argument
+	lodsq
+	push rsi
+	test rax, rax
+	lea rsi, [rel ErrorMessages.invalidarg]
+	jz ErrorExit
+	mov rsi, rax
+	lea rdi, [rel wTextBuffer]
+.loop:
+	movsb
+	cmp byte[rdi - 1], 0
+	jnz .loop
+	lea rsi, [rel wTextBuffer]
+	call ParseNumber
+	mov al, [rsi]
+	lea rsi, [rel ErrorMessages.invalidarg]
+	jc ErrorExit
+	test al, al
+	jnz ErrorExit
+	pop rsi
+	ret
+
 ParseNumber:
 	; in: rsi: string pointer (pointing to an optional sign and max 15 digits)
 	; out: rdi: parsed number, rsi: updated string pointer, carry: error

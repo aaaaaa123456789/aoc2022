@@ -8,6 +8,7 @@ ErrorMessages:
 	.highcount: message "error: read count too high"
 	.overflow: message "error: overflow"
 	.invalidbuffer: message "error: invalid buffer"
+	.invalidarg: message "error: invalid argument"
 
 	; errors from individual modes
 	.notfound: message "error: entry not found"
