@@ -13,7 +13,7 @@ endstruc
 Prob11a:
 	endbr64
 	call ReadMonkeyList
-	mov r14, 20
+	mov r14d, 20
 	lea r15, [rel DivideByThreeCallback]
 HandleMonkeyRounds:
 	; in: r13 = monkey list, r12 = monkey count, r14 = round count, r15 = post-update handler
@@ -100,7 +100,7 @@ Prob11b:
 	dec rcx
 	jnz .multiplyloop
 	mov [rel wModeData], rax
-	mov r14, 10000
+	mov r14d, 10000
 	lea r15, [rel .callback]
 	jmp HandleMonkeyRounds
 

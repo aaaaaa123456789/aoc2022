@@ -24,7 +24,7 @@ MapMemory:
 	and rsi, -MAPPING_ALIGNMENT
 	push rsi
 	mov edx, PROT_READ | PROT_WRITE
-	mov r10, MAP_PRIVATE | MAP_ANONYMOUS
+	mov r10d, MAP_PRIVATE | MAP_ANONYMOUS
 	mov r8, -1
 	xor r9, r9
 	mov eax, mmap
@@ -49,7 +49,7 @@ MapMemory:
 	jz .resized
 	mov [rdi + allocation.size], rdx
 	add rdi, allocation.mapping
-	mov r10, MREMAP_MAYMOVE
+	mov r10d, MREMAP_MAYMOVE
 	mov eax, mremap
 	syscall
 	test rax, rax

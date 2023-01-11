@@ -52,7 +52,7 @@ Prob10b:
 	endbr64
 	assert (wModeData.end - wModeData) >= (240 * 4)
 	lea r12, [rel wModeData + 240 * 4]
-	mov r13, 1
+	mov r13d, 1
 	mov r14, -240
 .readloop:
 	mov [r12 + r14 * 4], r13d

@@ -166,7 +166,7 @@ Prob15b:
 
 	; transform the coordinate space from (x, y) into (y + x, y - x) so that all covered areas are rectangular, then
 	; break down covered areas into non-overlapping pieces
-	mov r12, 32
+	mov r12d, 32
 .checknextentry:
 	cmp r12, r13
 	jz .overlapdone

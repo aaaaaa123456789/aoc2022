@@ -91,7 +91,7 @@ Loader:
 	mov rsi, [rbp + 40]
 	mov r8, -1
 	xor r9, r9
-	mov r10, MAP_PRIVATE | MAP_FIXED | MAP_ANONYMOUS | MAP_LOCKED
+	mov r10d, MAP_PRIVATE | MAP_FIXED | MAP_ANONYMOUS | MAP_LOCKED
 	mov edx, PROT_WRITE
 	mov eax, mmap
 	syscall
