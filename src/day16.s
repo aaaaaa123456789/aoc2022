@@ -1,44 +1,19 @@
+	absolute wModeData
+
+wValveBitmap: resq 11 ; 676 / 64, rounded up
+
+	assert $ <= wModeData.end
+
 	section .text
 Prob16a:
 	endbr64
 	call LoadValveLayoutData
 	mov ebx, 30
-	call .findoptimal
+	call FindOptimalValveSequence
 	call PrintNumber
 	mov rdi, r15
 	xor esi, esi
 	jmp MapMemory
-
-.findoptimal:
-	lea rsi, [rcx * 2]
-	imul esi, r12d
-	add rsi, r13
-	xor ecx, ecx
-	xor eax, eax
-.loop:
-	sub bx, [rsi + 2 * rcx]
-	jbe .next
-	bts [rel wModeData], ecx
-	jc .next
-	push rsi
-	push rax
-	push rcx
-	call .findoptimal
-	pop rcx
-	mov edx, [r15 + rcx * 4]
-	imul rdx, rbx
-	add rdx, rax
-	pop rax
-	pop rsi
-	cmp rax, rdx
-	cmovc rax, rdx
-	btr [rel wModeData], ecx
-.next:
-	add bx, [rsi + 2 * rcx]
-	inc ecx
-	cmp rcx, r12
-	jc .loop
-	ret
 
 Prob16b:
 	endbr64
@@ -115,7 +90,7 @@ Prob16b:
 	mov ebx, ecx
 	sub rbx, r12
 	cmovc ebx, ecx
-	bts [rel wModeData], ebx
+	bts [rel wValveBitmap], ebx
 	jc .next
 	push rax
 	push rcx
@@ -130,7 +105,7 @@ Prob16b:
 	pop rax
 	cmp rax, rdx
 	cmovc rax, rdx
-	btr [rel wModeData], ebx
+	btr [rel wValveBitmap], ebx
 .next:
 	add r14w, [rbp + 2 * rcx]
 	inc ecx
@@ -141,9 +116,40 @@ Prob16b:
 	sub rbp, rcx
 	ret
 
+FindOptimalValveSequence:
+	lea rsi, [rcx * 2]
+	imul esi, r12d
+	add rsi, r13
+	xor ecx, ecx
+	xor eax, eax
+.loop:
+	sub bx, [rsi + 2 * rcx]
+	jbe .next
+	bts [rel wValveBitmap], ecx
+	jc .next
+	push rsi
+	push rax
+	push rcx
+	call FindOptimalValveSequence
+	pop rcx
+	mov edx, [r15 + rcx * 4]
+	imul rdx, rbx
+	add rdx, rax
+	pop rax
+	pop rsi
+	cmp rax, rdx
+	cmovc rax, rdx
+	btr [rel wValveBitmap], ecx
+.next:
+	add bx, [rsi + 2 * rcx]
+	inc ecx
+	cmp rcx, r12
+	jc .loop
+	ret
+
 LoadValveLayoutData:
 	; out: r15 = flow array, r13 (after r15) = distance matrix, rcx = initial position, r12 = valve count
-	; first r12 bits in wModeData are also cleared to be used for valve tracking later on
+	; first r12 bits in wValveBitmap are also cleared to be used for valve tracking later on
 	; only nonzero valves are returned (plus an additional row in the distance matrix for the initial valve if needed)
 	xor edi, edi
 	mov esi, 676 * 8 ; one pointer for each possible valve ID
@@ -387,7 +393,7 @@ LoadValveLayoutData:
 
 	lea rcx, [r12 + 63]
 	shr ecx, 6
-	lea rdi, [rel wModeData]
+	lea rdi, [rel wValveBitmap]
 	xor eax, eax
 	rep stosq
 	mov rcx, r14
