@@ -35,6 +35,8 @@ ModeHandlers:
 	dq "15b",      Prob15b
 	dq "var15a",   Prob15aVariableSize
 	dq "var15b",   Prob15bVariableSize
+	dq "16a",      Prob16a
+	dq "16b",      Prob16b
 	dq "testcat",  TestCat
 	dq "testmap",  TestMap
 	dq "testmem",  TestMemory
