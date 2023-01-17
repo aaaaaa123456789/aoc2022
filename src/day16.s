@@ -1,6 +1,7 @@
 	absolute wModeData
 
-wValveBitmap: resq 11 ; 676 / 64, rounded up
+wValveBitmap: resq 1
+wValveFlagPositionList: resb 28
 
 	assert $ <= wModeData.end
 
@@ -8,6 +9,10 @@ wValveBitmap: resq 11 ; 676 / 64, rounded up
 Prob16a:
 	endbr64
 	call LoadValveLayoutData
+	cmp r12, 64
+	lea rsi, [rel ErrorMessages.manynonzero]
+	ja ErrorExit
+	mov qword[rel wValveBitmap], 0
 	mov ebx, 30
 	call FindOptimalValveSequence
 	call PrintNumber
@@ -18,105 +23,126 @@ Prob16a:
 Prob16b:
 	endbr64
 	call LoadValveLayoutData
-	lea rsi, [r12 * 4]
-	lea rdi, [rsi * 5]
-	lea rdi, [rdi * 5]
-	add esi, edi
+	cmp r12, 28
+	lea rsi, [rel ErrorMessages.manynonzero]
+	jnc ErrorExit
+	; call mmap() directly so the resulting mapping is aligned (no mapped header)
+	assert MAPPING_ALIGNMENT == 8 << 9
+	mov ecx, 9
+	cmp rcx, r12
+	cmovc rcx, r12
+	mov esi, 8
+	shl esi, cl
+	push rsi
 	xor edi, edi
-	call MapMemory
-	mov rbp, rdi
-	imul r14d, r12d
-	lea rsi, [r13 + r14 * 2]
-	mov rbx, rsi
+	mov edx, PROT_READ | PROT_WRITE
+	mov r10d, MAP_PRIVATE | MAP_ANONYMOUS
+	mov r8, -1
+	xor r9, r9
+	mov eax, mmap
+	syscall
+	lea rsi, [rel ErrorMessages.allocation]
+	test rax, rax
+	jle ErrorExit
+	pop r9
+
+	mov r8, rax
 	mov rcx, r12
-	rep movsw
-	mov rsi, rbx
+	mov r10, -8
+	shl r10, cl
+	sub rax, r10
+	sar r10, 3
+	mov r11, rax
+	mov qword[rax - 8], -1
+.count:
+	cmp qword[r11 + r10 * 8], 0
+	jnz .next
+	mov [rel wValveBitmap], r10
+	mov ebx, 26
+	mov rcx, r14
+	call FindOptimalValveSequence
+	not rax
+	not rdi
+	call .store
+.next:
+	inc r10
+	jnz .count
+
 	mov rcx, r12
-	rep movsw
-	mov rcx, r12
-	mov r14d, 26
-	call .findoptimal
-	lea r14, [rbp + r12 * 4]
+	sub ecx, 2
+	cmovc rcx, r10 ; r10 = 0
+	mov eax, 1
+	shl eax, cl
+	mov rsi, r8
+	lea rdi, [rax * 8 - 4]
+	lea rdi, [rsi + rdi * 4]
+	vpxor xmm0, xmm0, xmm0
+.findmax:
+	vmovdqa xmm1, [rsi]
+	add rsi, 16
+	vmovdqa xmm2, [rdi]
+	sub rdi, 16
+	vpshufd xmm2, xmm2, 0x4e
+	vpaddq xmm1, xmm1, xmm2
+	vpcmpgtq xmm2, xmm0, xmm1
+	vpblendvb xmm0, xmm0, xmm1, xmm2
+	dec eax
+	jnz .findmax
+	vmovq rax, xmm0
+	vpextrq r14, xmm1, 1
+	cmp rax, r14
+	cmovc r14, rax
+	not r14
+	dec r14
+
+	mov rdi, r8
+	mov rsi, r9
+	mov eax, munmap
+	syscall
+	lea rsi, [rel ErrorMessages.allocation]
+	test rax, rax
+	jnz ErrorExit
+	mov rax, r14
 	call PrintNumber
-	mov rdi, r14
-	xor esi, esi
-	call MapMemory
 	mov rdi, r15
+	xor esi, esi
 	jmp MapMemory
 
-.nextoptimal:
-	mov rax, rbp
-	lea rsi, [rbp + r12 * 2]
-	mov dx, [rbp + rcx * 2]
-	lea rbp, [rbp + r12 * 4]
-	mov rdi, rbp
-	lea rbx, [rbp + r12 * 2]
-	cmp rcx, r12
-	jc .lowhalf
-	mov rsi, rax
-	xchg rbx, rdi
-	sub rcx, r12
-.lowhalf:
-	imul ecx, r12d
-	lea r10, [r13 + rcx * 2]
-	mov rcx, r12
-.subtract:
-	lodsw
-	sub ax, dx ; deliberate underflow if ax < dx
-	mov [rbx], ax
-	add rbx, 2
-	dec ecx
-	jnz .subtract
-	mov rsi, r10
-	mov rcx, r12
-	rep movsw
-	; rcx = 0
-	cmp rbx, rdi
-	jc .findoptimal
-	sub rcx, r12
-	lea rsi, [rbp + r12 * 4]
-.clearzeros:
-	; if a value in the second half is zero, make it underflow
-	cmp word[rsi + 2 * rcx], 1
-	sbb word[rsi + 2 * rcx], 0
-	inc rcx
-	jnz .clearzeros
-	; rcx = 0
-.findoptimal:
-	xor eax, eax
-.loop:
-	sub r14w, [rbp + 2 * rcx]
-	jbe .next
-	mov ebx, ecx
-	sub rbx, r12
-	cmovc ebx, ecx
-	bts [rel wValveBitmap], ebx
-	jc .next
+.store:
+	mov rcx, rax
+	mov rsi, rdi
+	bsf rax, rdi
+	jz .write
+	lea rdi, [rel wValveFlagPositionList]
+	mov rbx, rdi
+.bitloop:
+	stosb
+	btr rsi, rax
+	bsf rax, rsi
+	jnz .bitloop
+	dec rdi
+.writenext:
+	cmp rdi, rbx
+	jc .write
+	movzx eax, byte[rdi]
+	dec rdi
+	bts r10, rax
+	push rdi
 	push rax
-	push rcx
-	call .nextoptimal
-	pop rcx
-	mov ebx, ecx
-	sub rbx, r12
-	cmovc ebx, ecx
-	mov edx, [r15 + rbx * 4]
-	imul rdx, r14
-	add rdx, rax
+	call .writenext
 	pop rax
-	cmp rax, rdx
-	cmovc rax, rdx
-	btr [rel wValveBitmap], ebx
-.next:
-	add r14w, [rbp + 2 * rcx]
-	inc ecx
-	lea rbx, [r12 * 2]
-	cmp ecx, ebx
-	jc .loop
-	lea rcx, [r12 * 4]
-	sub rbp, rcx
+	pop rdi
+	btr r10, rax
+	jmp .writenext
+
+.write:
+	mov [r11 + r10 * 8], rcx
 	ret
 
 FindOptimalValveSequence:
+	; in: ebx: time remaining, ecx, r14d: position, [wValveBitmap]: each bit 0/1 = closed/open
+	; out: rax = max score, rdi: valves opened; preserves rbp, r8-r15; expects r12, r13, r15 from LoadValveLayoutData
+	mov rdi, [rel wValveBitmap]
 	lea rsi, [rcx * 2]
 	imul esi, r12d
 	add rsi, r13
@@ -128,6 +154,7 @@ FindOptimalValveSequence:
 	bts [rel wValveBitmap], ecx
 	jc .next
 	push rsi
+	push rdi
 	push rax
 	push rcx
 	call FindOptimalValveSequence
@@ -139,6 +166,8 @@ FindOptimalValveSequence:
 	pop rsi
 	cmp rax, rdx
 	cmovc rax, rdx
+	cmovnc rdi, rsi
+	pop rsi
 	btr [rel wValveBitmap], ecx
 .next:
 	add bx, [rsi + 2 * rcx]
@@ -148,8 +177,7 @@ FindOptimalValveSequence:
 	ret
 
 LoadValveLayoutData:
-	; out: r15 = flow array, r13 (after r15) = distance matrix, rcx = initial position, r12 = valve count
-	; first r12 bits in wValveBitmap are also cleared to be used for valve tracking later on
+	; out: r15 = flow array, r13 (after r15) = distance matrix, rcx = initial, r12 = valve count
 	; only nonzero valves are returned (plus an additional row in the distance matrix for the initial valve if needed)
 	xor edi, edi
 	mov esi, 676 * 8 ; one pointer for each possible valve ID
@@ -390,12 +418,6 @@ LoadValveLayoutData:
 	sub rdi, rbx
 	xor esi, esi
 	call AllocateMemory
-
-	lea rcx, [r12 + 63]
-	shr ecx, 6
-	lea rdi, [rel wValveBitmap]
-	xor eax, eax
-	rep stosq
 	mov rcx, r14
 	ret
 

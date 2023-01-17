@@ -17,6 +17,7 @@ ErrorMessages:
 	.unreachable: message "error: unreachable"
 	.fillup: message "error: layout fills up"
 	.nolocation: message "error: no available location"
+	.manynonzero: message "error: too many non-zero entries"
 
 WarningMessages:
 	.invalidmode: withend db "warning: invalid mode: "
