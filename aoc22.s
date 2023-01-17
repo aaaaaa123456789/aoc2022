@@ -28,5 +28,6 @@
 %include "src/day14.s"
 %include "src/day15.s"
 %include "src/day16.s"
+%include "src/day17.s"
 
 %include "src/message.s"
