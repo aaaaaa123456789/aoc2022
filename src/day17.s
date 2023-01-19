@@ -1,68 +1,93 @@
 	section .text
 Prob17a:
 	endbr64
-	xor edi, edi
-	mov esi, (2022 * 13 / 5 + 14) & -8
-	call MapMemory
-	push rdi
-	mov ecx, (2022 * 13 / 5 + 14) >> 3
-	mov rax, 0x8080808080808080
-	rep stosq
-.read:
-	call ReadInputLine
-	jc InvalidInputError
-	test rdi, rdi
-	jz .read
-	pop rdi
-	mov rbp, rsi
-	xor ecx, ecx
-	mov ebx, 0x0000001e
-	mov r11, rbx
-	vmovdqa xmm0, [rel .rocks]
-	mov edx, 3
-	mov r10d, 2022
-	mov al, -1
-	stosb
+	call PrepareRockData
+	push 2022
 .loop:
-	cmp byte[rsi], 0
-	cmovz rsi, rbp
-	mov eax, ebx
-	rol eax, 2
-	cmp byte[rsi], ">"
-	cmovz eax, ebx
-	inc rsi
-	ror eax, 1
-	test eax, [rdi + rdx]
-	cmovz ebx, eax
-	dec rdx
-	test ebx, [rdi + rdx]
-	jz .loop
-	inc rdx
-	or [rdi + rdx], ebx
-	mov rbx, rdi
-	add rdi, rcx
-	mov al, 0x80
-	mov rcx, -1
-	repnz scasb
-	sub edi, ebx
-	lea rcx, [rdi - 1]
-	mov rdi, rbx
-	lea rdx, [rcx + 3]
-	vmovd xmm1, r11d
-	vmovd r11d, xmm0
-	vpalignr xmm0, xmm1, xmm0, 4
-	mov rbx, r11
-	dec r10
+	call DropRock
+	dec dword[rsp]
 	jnz .loop
-	mov r12, rdi
-	mov eax, ecx
+	pop rax ; dummy
+	mov rax, r15
 	call PrintNumber
 	lea rdi, [r12 - 1]
 	xor esi, esi
 	jmp MapMemory
 
+PrepareRockData:
+	; out: r12: initial buffer, rsi: buffer size, r13: input, r14, r15: zero, {xmm15, xmm14}: rock list, rax: input size
+	call ReadInputLine
+	jc InvalidInputError
+	test rdi, rdi
+	jz PrepareRockData
+	mov r13, rsi
+	xor edi, edi
+	mov esi, 1
+	call MapMemory
+	lea r12, [rdi + 1]
+	mov rcx, rsi
+	shr rcx, 3
+	mov rax, 0x8080808080808080
+	rep stosq
+	mov byte[r12 - 1], -1
+	xor r14, r14
+	xor r15, r15
+	sub rsi, 8
+	mov ebx, 0x00001818
+	vmovd xmm14, ebx
+	vmovdqa xmm15, [rel .rocks]
+	ret
+
 	pushsection .rodata align=16
 .rocks:
-	; excluding the first one (already loaded)
-	dd 0x00081c08, 0x0004041c, 0x10101010, 0x00001818
+	; excluding the last one (manually loaded)
+	dd 0x0000001e, 0x00081c08, 0x0004041c, 0x10101010
 	popsection
+
+DropRock:
+	; expects: r12: buffer, rsi: effective size (true size - 8), r14: input position, r13: input base, r15: height,
+	;          {xmm15, xmm14}: rock list
+	; updates those registers, preserves xmm12 and xmm13 and clobbers everything else
+	cmp r15, rsi
+	jc .go
+	push rsi
+	lea rdi, [r12 - 1]
+	lea rsi, [r15 + 8]
+	call MapMemory
+	lea r12, [rdi + 1]
+	pop rcx
+	add rdi, rcx
+	neg rcx
+	add rcx, rsi
+	sub rsi, 8
+	shr rcx, 3
+	mov rax, 0x8080808080808080
+	rep stosq
+.go:
+	lea rdx, [r15 + 3]
+	vmovd ebx, xmm15
+	vpalignr xmm15, xmm14, xmm15, 4
+	vmovd xmm14, ebx
+.loop:
+	mov eax, ebx
+	rol eax, 2
+	cmp byte[r14 + r13], ">"
+	cmovz eax, ebx
+	inc r14
+	movzx ecx, byte[r14 + r13]
+	test ecx, ecx
+	cmovz r14, rcx
+	ror eax, 1
+	test eax, [r12 + rdx]
+	cmovz ebx, eax
+	dec rdx
+	test ebx, [r12 + rdx]
+	jz .loop
+	or [r12 + rdx + 1], ebx
+	lea rdi, [r12 + r15]
+	mov al, 0x80
+	mov rcx, -1
+	repnz scasb
+	lea r15, [rdi - 1]
+	sub r15, r12
+	ret
